@@ -7,3 +7,4 @@
 - kubectl
 - mongo-aws
 - etcd-aws
+- kind
