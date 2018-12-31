@@ -1,5 +1,5 @@
 image = sighup/kind
-tag = v1.12.3
+tag = v1.12.3-bats
 
 build:
 	docker build -t $(image):$(tag) .

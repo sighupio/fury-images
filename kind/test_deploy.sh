@@ -22,7 +22,6 @@ cleanup() {
   kind delete cluster --name="$NAME"
 }
 
-pwd
 sleep 5
 if setup ;
 then
