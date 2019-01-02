@@ -11,7 +11,8 @@ RUN apk add bash
 WORKDIR /tests
 ENV PATH="${PATH}:/root/go/bin"
 COPY kind-config /kind-config
-COPY test_deploy.bats ./common.bats
-COPY tests.bats ./
+COPY setup.sh .
 ENTRYPOINT ["bash", "-c"]
-CMD ["sleep 10 && bats /tests/common.bats"]
+ENV NAME test
+CMD ["bash /tests/setup.sh && export KUBECONFIG=\"$(kind get kubeconfig-path --name=\"$NAME\")\" && bats $TESTS"]
+
