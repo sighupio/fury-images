@@ -14,7 +14,7 @@ steps:
       - ./build.sh
     volumes:
       - name: dockersock
-        path: /var/run
+        path: /var/run/docker.sock
     when:
       event:
       - push
