@@ -1,0 +1,4 @@
+FROM sighup/furyctl:v0.1.0
+RUN apk add --no-cache bash nodejs npm curl && npm install -g bats \
+  && curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v1.0.11/kustomize_1.0.11_linux_amd64 -o /usr/local/bin/kustomize \
+  && chmod +x /usr/local/bin/kustomize && kustomize version \
