@@ -1,0 +1,6 @@
+image: sighup/furyctl
+tags:
+  FURYCTL:
+    - v0.1.0
+  ALPINE:
+    - 3.8

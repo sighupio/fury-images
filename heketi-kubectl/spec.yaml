@@ -1,0 +1,6 @@
+image: sighup/heketi-kubectl
+tags:
+  KUBECTL:
+    - v1.11.0
+  HEKETI:
+    - 7

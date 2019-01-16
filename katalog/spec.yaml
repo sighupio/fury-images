@@ -1,0 +1,6 @@
+image: sighup/katalog
+tags:
+  PYTHON:
+    - 3
+  KUSTOMIZE:
+    - v1.0.11

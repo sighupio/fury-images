@@ -1,0 +1,6 @@
+image: sighup/etcdctl-aws
+tags:
+  ALPINE:
+    - 3.8
+  ETCD:
+    - v3.3.5

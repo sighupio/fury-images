@@ -1,0 +1,4 @@
+image: sighup/mongo-aws
+tags:
+  MONGO:
+    - 3.6

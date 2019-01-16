@@ -1,0 +1,4 @@
+image: sighup/kubectl
+tags:
+  KUBECTL:
+    - v1.11.1

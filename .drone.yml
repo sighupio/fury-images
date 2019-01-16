@@ -11,7 +11,7 @@ steps:
     image: docker:dind
     pull: always
     commands:
-      - apk add --no-cache make
+      - apk add --no-cache python3
       - ./build.sh
     volumes:
       - name: dockersock

@@ -1,0 +1,10 @@
+image: sighup/prom-rules
+tags:
+  FURYCTL:
+    - v0.1.0
+  ALPINE:
+    - 3.8
+  YQ:
+    - 2.2.0
+  PROMETHEUS:
+    - 2.5.0
