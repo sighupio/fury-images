@@ -12,7 +12,7 @@ steps:
     pull: always
     commands:
       - apk add --no-cache python3
-      - ./build.sh
+      - ./build.py
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
