@@ -11,8 +11,7 @@ steps:
     image: docker:dind
     pull: always
     commands:
-      - apk add --no-cache python3
-      - pip install pyyaml
+      - apk add --no-cache python3 py-yaml
       - ./build.py
     volumes:
       - name: dockersock
