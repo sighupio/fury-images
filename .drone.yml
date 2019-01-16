@@ -12,6 +12,7 @@ steps:
     pull: always
     commands:
       - apk add --no-cache python3
+      - pip install pyyaml
       - ./build.py
     volumes:
       - name: dockersock
