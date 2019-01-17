@@ -1,6 +1,6 @@
 ARG ALPINE
-ARG ETCD
 FROM alpine:${ALPINE}
+ARG ETCD=v3.3.5
 
 # Adding Aws-cli to be able to upload snapshot to S3
 RUN apk add --update --no-cache curl python py-pip
