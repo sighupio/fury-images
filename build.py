@@ -12,9 +12,8 @@ print([dict(zip(specs["furyctl"]["tags"].keys(), values)) for values in itertool
 
 for k in specs.keys():
     for ts in [dict(zip(specs[k]["tags"].keys(), values)) for values in itertools.product(*specs[k]["tags"].values())]:
-        #os.system("docker build " + " ".join(["--build-arg " + k + "=" + v for (k,v) in ts.items()]) + " -t " + specs[k]["image"] + ":" + "_".join([ts[ts_key] for ts_key in sorted(ts.keys())]) + " " + k )
         image = specs[k]["image"] + ":" + "_".join([str(ts[ts_key]) for ts_key in sorted(ts.keys())])
-        print("docker build " + " ".join(["--build-arg " + k + "=" + str(v) for (k,v) in ts.items()]) + " -t " + image + " " + k )
-        print("docker push " + image)
+        os.system("docker build " + " ".join(["--build-arg " + k + "=" + str(v) for (k,v) in ts.items()]) + " -t " + image + " " + k )
+        os.system("docker push " + image)
 
 
