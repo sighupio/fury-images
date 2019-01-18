@@ -17,8 +17,9 @@ steps:
         from_secret:
           QUAY_TOKEN
     pull: always
+    secrets: 
     commands:
-      - docker login -p ${TOKEN} -u ${USER} quay.io
+      - docker login -p $TOKEN -u $USER quay.io
       - apk add --no-cache python3 py-yaml
       - ./build.py quay.io
     volumes:
