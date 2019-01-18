@@ -5,7 +5,7 @@ import sys
 import itertools
 
 specs={}
-repo = sys.argv[1] if len(sys.argv) > 1 else ""
+repo = sys.argv[1] + "/" if len(sys.argv) > 1 else ""
 for d in [ d for d in os.listdir(".") if not d.startswith(".") and os.path.isdir(d) and os.path.isfile(os.path.join(d,"spec.yaml"))]:
     with open(os.path.join(d,"spec.yaml")) as f:
         specs[d]=yaml.load(f)
