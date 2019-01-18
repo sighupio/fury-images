@@ -9,10 +9,18 @@ platform:
 steps:
   - name: integration-test
     image: docker:dind
+    environment:
+      USER:
+        from_secret:
+          QUAY_USER
+      TOKEN:
+        from_secret:
+          QUAY_TOKEN
     pull: always
     commands:
+      - docker login -p ${TOKEN} -u ${USER} quay.io
       - apk add --no-cache python3 py-yaml
-      - ./build.py
+      - ./build.py quay.io
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
