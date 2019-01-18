@@ -1,0 +1,4 @@
+image: sighup/mongodb_exporter
+tags:
+  MONGODB_EXPORTER:
+    - v0.6.2
