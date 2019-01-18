@@ -7,7 +7,7 @@ platform:
   arch: amd64
 
 steps:
-  - name: integration-test
+  - name: build
     image: docker:dind
     environment:
       USER:
