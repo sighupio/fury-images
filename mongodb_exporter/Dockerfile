@@ -1,5 +1,7 @@
 FROM golang:1.11-alpine as builder
 
+ARG MONGODB_EXPORTER
+
 RUN apk add --no-cache git \
      && go get github.com/percona/mongodb_exporter
 
