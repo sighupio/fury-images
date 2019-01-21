@@ -6,7 +6,7 @@ nodes:
 - role: control-plane
   kubeadmConfigPatchesJson6902:
   - group: kubeadm.k8s.io
-    version: v1alpha3
+    version: v1beta1
     kind: ClusterConfiguration
     patch: |
       - op: add
