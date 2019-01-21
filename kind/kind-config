@@ -9,7 +9,7 @@ nodes:
     kind: ClusterConfiguration
     patch: |
       - op: add
-        path: /apiServer/cetSANs/-
+        path: apiServer/cetSANs/-
         value: docker
 - role: worker
   replicas: 1
