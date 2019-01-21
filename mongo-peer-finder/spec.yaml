@@ -1,0 +1,4 @@
+image: sighup/mongo-peer-finder
+tags:
+  MONGO:
+    - 4.0.5
