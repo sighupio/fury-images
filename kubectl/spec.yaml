@@ -2,3 +2,5 @@ image: sighup/kubectl
 tags:
   KUBECTL:
     - v1.11.1
+    - v1.12.5
+    - v1.13.2
