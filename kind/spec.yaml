@@ -3,4 +3,4 @@ tags:
   KUBECTL:
     - v1.12.0
   KUSTOMIZE:
-    - 1.0.11
+    - 1.0.10
