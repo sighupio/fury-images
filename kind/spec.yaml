@@ -2,5 +2,8 @@ image: sighup/kind
 tags:
   KUBECTL:
     - v1.12.0
-  KUSTOMIZE:
     - 1.0.10
+  KUSTOMIZE:
+  KIND:
+    - 0.1.0
+
