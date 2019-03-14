@@ -1,6 +1,5 @@
-FROM jenkins/jnlp-slave:3.27-1-alpine
+FROM jenkins/jnlp-slave:3.27-1
 
-RUN apk add curl ca-certificates --no-cache --update
 ARG KUBECTL
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl && \
