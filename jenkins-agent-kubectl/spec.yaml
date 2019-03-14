@@ -1,0 +1,9 @@
+image: sighup/jenkins-agent-kubectl
+tags:
+  KUBECTL:
+    - 1.11.8
+    - 1.12.6
+    - 1.13.4
+  KUSTOMIZE:
+    - 1.0.10
+    - 2.0.3
