@@ -1,6 +1,7 @@
 FROM jenkins/jnlp-slave:3.27-1
 
 
+RUN mkdir -p /home/jenkins/bin
 ENV PATH=$PATH:/home/jenkins/bin
 ARG KUBECTL
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl -o /home/jenkins/bin/kubectl && \
