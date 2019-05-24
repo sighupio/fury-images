@@ -1,15 +1,15 @@
 apiVersion: kind.sigs.k8s.io/v1alpha3
 kind: Cluster
 
+kubeadmConfigPatchesJson6902:
+- group: kubeadm.k8s.io
+  version: v1beta1
+  kind: ClusterConfiguration
+  patch: |
+    - op: add
+      path: /apiServer/certSANs/-
+      value: docker
 nodes:
 - role: control-plane
-  kubeadmConfigPatchesJson6902:
-  - group: kubeadm.k8s.io
-    version: v1beta1
-    kind: ClusterConfiguration
-    patch: |
-      - op: add
-        path: /apiServer/certSANs/-
-        value: docker
 - role: worker
   replicas: 1
