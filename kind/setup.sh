@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-kind create cluster --name "$NAME" --config /kind-config --wait 1m
+set -e
+kind create cluster --name "$NAME" --config /kind-config --wait 1m --loglevel=debug
 export KUBECONFIG="$(kind get kubeconfig-path --name="$NAME")"
 sed -i 's/localhost/'"$CLUSTER_HOST"'/g' "$KUBECONFIG"
 #kubectl apply -f - <<EOF
