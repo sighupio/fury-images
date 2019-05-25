@@ -12,4 +12,3 @@ kubeadmConfigPatchesJson6902:
 nodes:
 - role: control-plane
 - role: worker
-  replicas: 1
