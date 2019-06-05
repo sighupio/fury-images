@@ -1,0 +1,4 @@
+image: sighup/s3-backup-elasticsearch
+tags:
+  ELASTICSEARCH:
+    - 6.4.1
