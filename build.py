@@ -9,8 +9,7 @@ repo = sys.argv[1] + "/" if len(sys.argv) > 1 else ""
 for d in [ d for d in os.listdir(".") if not d.startswith(".") and os.path.isdir(d) and os.path.isfile(os.path.join(d,"spec.yaml"))]:
     with open(os.path.join(d,"spec.yaml")) as f:
         specs[d]=yaml.load(f)
-print(specs)
-print([dict(zip(specs["furyctl"]["tags"].keys(), values)) for values in itertools.product(*specs["furyctl"]["tags"].values())])
+print(yaml.dump(specs))
 
 for k in specs.keys():
     for ts in [dict(zip(specs[k]["tags"].keys(), values)) for values in itertools.product(*specs[k]["tags"].values())]:

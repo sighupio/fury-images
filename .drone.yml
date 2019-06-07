@@ -7,6 +7,12 @@ platform:
   arch: amd64
 
 steps:
+  - name: check
+    image: python:3
+    command:
+      - ./generate_dockerfiles.py
+      - git diff --quiet HEAD
+
   - name: build
     image: docker:dind
     environment:
@@ -17,7 +23,6 @@ steps:
         from_secret:
           QUAY_TOKEN
     pull: always
-    secrets: 
     commands:
       - docker login -p $TOKEN -u $USER quay.io
       - apk add --no-cache python3 py-yaml

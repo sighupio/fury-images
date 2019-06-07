@@ -1,0 +1,10 @@
+FROM alpine:3.9
+
+RUN apk add curl ca-certificates --no-cache --update
+RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v1.12.5/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl && \
+    kubectl version --client
+
+RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v1.0.10/kustomize_1.0.10_linux_amd64 -o /usr/local/bin/kustomize && \
+    chmod +x /usr/local/bin/kustomize && \
+    kustomize version

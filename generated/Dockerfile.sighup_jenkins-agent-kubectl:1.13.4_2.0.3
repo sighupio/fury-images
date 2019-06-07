@@ -1,0 +1,12 @@
+FROM jenkins/jnlp-slave:3.27-1
+
+
+RUN mkdir -p /home/jenkins/bin
+ENV PATH=$PATH:/home/jenkins/bin
+RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v1.13.4/bin/linux/amd64/kubectl -o /home/jenkins/bin/kubectl && \
+    chmod +x /home/jenkins/bin/kubectl && \
+    kubectl version --client
+
+RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v2.0.3/kustomize_2.0.3_linux_amd64 -o /home/jenkins/bin/kustomize && \
+    chmod +x /home/jenkins/bin/kustomize && \
+    kustomize version
