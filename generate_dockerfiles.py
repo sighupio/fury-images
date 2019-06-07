@@ -8,9 +8,6 @@ for d in [ d for d in os.listdir(".") if not d.startswith(".") and os.path.isdir
         specs[d]=yaml.load(f)
 print(yaml.dump(specs))
 
-def replaceVars(vars):
-    return lambda matchobj : str(vars[matchobj.group(1)])
-
 generated_dir="generated"
 
 shutil.rmtree(generated_dir)
@@ -26,7 +23,5 @@ for k in specs.keys():
                 if "ARG" in line:
                     continue
                 else:
-                    pattern ="\$\{\s*("+"|".join(list(ts.keys()))+")\s*\}"
-                    line = re.sub(pattern, replaceVars(ts), line)
+                    line = re.sub("\$\{\s*("+"|".join(list(ts.keys()))+")\s*\}", lambda matchobj : str(ts[matchobj.group(1)]), line)
                     dest.write(line)
-
