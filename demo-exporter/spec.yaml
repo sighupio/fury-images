@@ -1,0 +1,4 @@
+image: sighup/demo-exporter
+tags:
+  PYTHON:
+    - 3-stretch

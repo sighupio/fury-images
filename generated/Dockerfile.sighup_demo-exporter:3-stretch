@@ -1,5 +1,4 @@
-ARG PYTHON
-FROM python:${PYTHON}
+FROM python:3-stretch
 
 WORKDIR /app
 
