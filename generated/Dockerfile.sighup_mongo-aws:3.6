@@ -1,4 +1,4 @@
-FROM mongo:3.6
+FROM mongo:3.7
 
 RUN apt-get update && apt-get install curl python-pip -y
 RUN pip install awscli --upgrade && aws --version
