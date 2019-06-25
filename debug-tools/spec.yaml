@@ -1,0 +1,4 @@
+image: sighup/debug-tools
+tags:
+  DEBIAN:
+    - stretch
