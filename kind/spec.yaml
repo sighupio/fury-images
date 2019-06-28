@@ -5,5 +5,5 @@ tags:
   KUSTOMIZE:
     - 1.0.10
   KIND:
-    - 0.1.0
     - v0.3.0
+    - v0.4.0
