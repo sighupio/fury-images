@@ -2,7 +2,7 @@
 set -e
 kind create cluster --name "$NAME" --config /kind-config --wait 1m --loglevel=debug
 export KUBECONFIG="$(kind get kubeconfig-path --name="$NAME")"
-sed -i 's/localhost/'"$CLUSTER_HOST"'/g' "$KUBECONFIG"
+sed -i -E -e 's/localhost|0\.0\.0\.0/'"$CLUSTER_HOST"'/g' "$KUBECONFIG"
 kubectl apply -f - <<EOF
 ---
 # Source: hostpath-provisioner/templates/storageclass.yaml
