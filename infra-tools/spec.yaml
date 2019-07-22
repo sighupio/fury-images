@@ -1,0 +1,10 @@
+image: sighup/katalog
+tags:
+  UBUNTU:
+    - cosmic
+  TERRAFORM:
+    - v0.11.14
+  KUSTOMIZE:
+    - 1.0.10
+  KUBECTL:
+    - 1.15.1
