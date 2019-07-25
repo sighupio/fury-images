@@ -1,7 +1,7 @@
 image: sighup/katalog
 tags:
   UBUNTU:
-    - cosmic
+    - bionic
   TERRAFORM:
     - v0.11.14
   KUSTOMIZE:
