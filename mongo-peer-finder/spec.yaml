@@ -2,3 +2,5 @@ image: sighup/mongo-peer-finder
 tags:
   MONGO:
     - 4.0.5
+  MONGO_PEER_FINDER:
+    - v2
