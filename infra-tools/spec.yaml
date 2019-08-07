@@ -1,9 +1,9 @@
-image: sighup/katalog
+image: sighup/infra-tools
 tags:
   UBUNTU:
     - bionic
   TERRAFORM:
-    - v0.11.14
+    - 0.11.14
   KUSTOMIZE:
     - 1.0.10
   KUBECTL:
