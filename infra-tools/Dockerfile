@@ -19,5 +19,3 @@ RUN curl -L https://releases.hashicorp.com/terraform/${TERRAFORM}/terraform_${TE
     rm terraform.zip && \
     chmod +x /usr/local/bin/terraform && \
     terraform version
-
-VOLUME /.gnupg/
