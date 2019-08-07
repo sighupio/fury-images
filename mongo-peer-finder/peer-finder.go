@@ -142,6 +142,9 @@ func main() {
 			log.Printf("Have not found myself in list yet.\nMy Hostname: %s\nHosts in list: %s", myName, strings.Join(newPeers.List(), ", "))
 			continue
 		}
+		if newPeers.Equal(peers) {
+			continue
+		}
 		peerList := newPeers.List()
 		sort.Strings(peerList)
 		log.Printf("Peer list updated\nwas %v\nnow %v", peers.List(), newPeers.List())
