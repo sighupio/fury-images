@@ -1,15 +1,10 @@
-FROM alpine/git:1.0.7 AS git-cloner
 
-WORKDIR /src
+FROM golang:1.12 AS builder
 
-RUN git clone https://github.com/kubernetes/apimachinery.git kubernetes/apimachinery \
-      && git clone https://github.com/kubernetes-retired/contrib.git kubernetes-retired/contrib
+RUN git clone https://github.com/kubernetes/apimachinery.git \
+      /go/src/k8s.io/apimachinery
 
-FROM golang:1.12 AS go-builder
-
-COPY --from=git-cloner /src/kubernetes/apimachinery /go/src/k8s.io/apimachinery
-
-COPY --from=git-cloner /src/kubernetes-retired/contrib /src/kubernetes-retired/contrib
+COPY ./peer-finder.go /src/kubernetes-retired/contrib/peer-finder/
 
 WORKDIR /src/kubernetes-retired/contrib/peer-finder
 
@@ -17,7 +12,7 @@ RUN CGO_ENABLED=0 go build -a -installsuffix cgo --ldflags '-w' ./peer-finder.go
 
 FROM mongo:4.0.5
 
-COPY --from=go-builder /src/kubernetes-retired/contrib/peer-finder/peer-finder /usr/bin/peer-finder
+COPY --from=builder /src/kubernetes-retired/contrib/peer-finder/peer-finder /usr/bin/peer-finder
 
 ENTRYPOINT ["/usr/bin/peer-finder"]
 
