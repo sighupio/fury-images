@@ -10,7 +10,7 @@ WORKDIR /src/kubernetes-retired/contrib/peer-finder
 
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo --ldflags '-w' ./peer-finder.go
 
-FROM mongo:4.0.5
+FROM mongo:4.2.0
 
 COPY --from=builder /src/kubernetes-retired/contrib/peer-finder/peer-finder /usr/bin/peer-finder
 
