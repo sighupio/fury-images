@@ -1,0 +1,8 @@
+image: sighup/jibri
+tags:
+  JITSI_RELEASE:
+    - unstable
+  CHROME_RELEASE:
+    - latest
+  CHROMEDRIVER_MAJOR_RELEASE:
+    - latest
