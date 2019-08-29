@@ -1,1 +1,4 @@
 image: sighup/jitsi-prosody
+tags:
+  PROSODY:
+    - v1

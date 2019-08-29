@@ -1,1 +1,4 @@
 image: sighup/jitsi-web
+tags:
+  WEB:
+    - v1

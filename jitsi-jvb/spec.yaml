@@ -1,1 +1,4 @@
 image: sighup/jitsi-jvb
+tags:
+  JVB:
+    - v1
