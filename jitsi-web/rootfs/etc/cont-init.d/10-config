@@ -1,67 +1,108 @@
 #!/usr/bin/with-contenv bash
 
-if [[ ! -f /config/saslauthd.conf ]]; then
-  cp /defaults/saslauthd.conf /config/
-fi
+# make our folders
+mkdir -p \
+    /config/{nginx/site-confs,keys} \
+    /run \
+    /var/lib/nginx/tmp/client_body \
+    /var/tmp/nginx
 
-if [[ ! -f /etc/saslauthd.conf ]]; then
-  tpl /config/saslauthd.conf > /etc/saslauthd.conf
-  mkdir -pm777 /var/run/saslauthd
-  adduser prosody sasl
-  echo >> /etc/ldap/ldap.conf "TLS_REQCERT allow"
-fi
-
-PROSODY_CFG="/config/prosody.cfg.lua"
-
-if [[ ! -d /config/data ]]; then
-    mkdir -pm 750 /config/data
-fi
-
-if [[ "$(stat -c %U /config)" != "prosody" ]]; then
-    chown -R prosody /config
-fi
-
-if [[ "$(stat -c %U /prosody-plugins)" != "prosody" ]]; then
-    chown -R prosody /prosody-plugins
-fi
-
-if [[ "$(stat -c %U /prosody-plugins-custom)" != "prosody" ]]; then
-    chown -R prosody /prosody-plugins-custom
-fi
-
-if [[ ! -f $PROSODY_CFG ]]; then
-    cp -r /defaults/* /config
-    tpl /defaults/prosody.cfg.lua > $PROSODY_CFG
-    tpl /defaults/conf.d/jitsi-meet.cfg.lua > /config/conf.d/jitsi-meet.cfg.lua
-
-    prosodyctl --config $PROSODY_CFG register $JICOFO_AUTH_USER $XMPP_AUTH_DOMAIN $JICOFO_AUTH_PASSWORD
-    prosodyctl --config $PROSODY_CFG register $JVB_AUTH_USER $XMPP_AUTH_DOMAIN $JVB_AUTH_PASSWORD
-
-    if [[ ! -z $JIBRI_XMPP_USER ]] && [[ ! -z $JIBRI_XMPP_PASSWORD ]]; then
-        prosodyctl --config $PROSODY_CFG register $JIBRI_XMPP_USER $XMPP_AUTH_DOMAIN $JIBRI_XMPP_PASSWORD
+# generate keys (maybe)
+if [[ $DISABLE_HTTPS -ne 1 ]]; then
+    if [[ $ENABLE_LETSENCRYPT -eq 1 ]]; then
+        if [[ ! -f /etc/letsencrypt/live/$LETSENCRYPT_DOMAIN/fullchain.pem ]]; then
+            certbot certonly \
+                --noninteractive \
+                --standalone \
+                --preferred-challenges http \
+                -d $LETSENCRYPT_DOMAIN \
+                --agree-tos \
+                --email $LETSENCRYPT_EMAIL
+            cp /defaults/letsencrypt-renew /etc/cron.monthly/
+        fi
+    else
+        # use self-signed certs
+        if [[ -f /config/keys/cert.key && -f /config/keys/cert.crt ]]; then
+            echo "using keys found in /config/keys"
+        else
+            echo "generating self-signed keys in /config/keys, you can replace these with your own keys if required"
+            SUBJECT="/C=US/ST=TX/L=Austin/O=jitsi.org/OU=Jitsi Server/CN=*"
+            openssl req -new -x509 -days 3650 -nodes -out /config/keys/cert.crt -keyout /config/keys/cert.key -subj "$SUBJECT"
+        fi
     fi
-
-    if [[ ! -z $JIBRI_RECORDER_USER ]] && [[ ! -z $JIBRI_RECORDER_PASSWORD ]]; then
-        prosodyctl --config $PROSODY_CFG register $JIBRI_RECORDER_USER $XMPP_RECORDER_DOMAIN $JIBRI_RECORDER_PASSWORD
-    fi
-
-    if [[ ! -z $JIGASI_XMPP_USER ]] && [[ ! -z $JIGASI_XMPP_PASSWORD ]]; then
-        prosodyctl --config $PROSODY_CFG register $JIGASI_XMPP_USER $XMPP_AUTH_DOMAIN $JIGASI_XMPP_PASSWORD
+    if [[ ! -f /config/nginx/dhparams.pem ]]; then
+        openssl dhparam -out /config/nginx/dhparams.pem 2048
     fi
 fi
 
-mkdir -p /config/certs
-
-if [[ ! -f /config/certs/$XMPP_DOMAIN.crt ]]; then
-    # echo for using all default values
-    echo | prosodyctl --config $PROSODY_CFG cert generate $XMPP_DOMAIN
+# copy config files
+if [[ ! -f /config/nginx/nginx.conf ]]; then
+    cp /defaults/nginx.conf /config/nginx/nginx.conf
 fi
 
-if [[ ! -f /config/certs/$XMPP_AUTH_DOMAIN.crt ]]; then
-    # echo for using all default values
-    echo | prosodyctl --config $PROSODY_CFG cert generate $XMPP_AUTH_DOMAIN
+if [[ ! -f /config/nginx/meet.conf ]]; then
+    tpl /defaults/meet.conf > /config/nginx/meet.conf
 fi
 
-# certs will be created in /config/data
-mv /config/data/*.{crt,key} /config/certs/ || true
-rm -f /config/data/*.cnf
+if [[ ! -f /config/nginx/ssl.conf ]]; then
+    tpl /defaults/ssl.conf > /config/nginx/ssl.conf
+fi
+
+if [[ ! -f /config/nginx/site-confs/default ]]; then
+    tpl /defaults/default > /config/nginx/site-confs/default
+fi
+
+if [[ ! -f /config/config.js ]]; then
+    cp /defaults/config.js /config/config.js
+    sed -i \
+        -e "s#jitsi-meet.example.com#$XMPP_DOMAIN#g" \
+        -e "s#bosh:.*#bosh: '/http-bind',#" \
+        -e "s#muc:.*#muc: '${XMPP_MUC_DOMAIN}',#" \
+        -e "s#// focusUserJid:.*#focusUserJid: '${JICOFO_AUTH_USER}@${XMPP_AUTH_DOMAIN}',#" \
+        /config/config.js
+
+    if [[ $ENABLE_RECORDING -eq 1 || x$ENABLE_RECORDING == xtrue ]]; then
+        sed -i \
+            -e "/\/\/ Recording.*/a hiddenDomain: '$XMPP_RECORDER_DOMAIN'," \
+            -e "s#// fileRecordingsEnabled:.*#fileRecordingsEnabled: true,#" \
+        /config/config.js
+    fi
+
+    if [[ $ENABLE_AUTH -eq 1 ]]; then
+        if [[ $ENABLE_GUESTS -eq 1 ]]; then
+            sed -i \
+                -e "s#// anonymousdomain:.*#anonymousdomain: '${XMPP_GUEST_DOMAIN}',#" \
+                /config/config.js
+        fi
+
+        sed -i \
+            -e "s#// authdomain:.*#authdomain: '${XMPP_DOMAIN}',#" \
+            /config/config.js
+    fi
+
+    if [[ ! -z "${ETHERPAD_URL_BASE}" && -z "$(grep -om1 'etherpad_base:' /config/config.js)" ]]; then
+        sed -i \
+            -e "/enableWelcomePage/a\    etherpad_base: '/etherpad/p/'," \
+            /config/config.js
+    fi
+
+    if [[ $ENABLE_TRANSCRIPTIONS -eq 1 || "$ENABLE_TRANSCRIPTIONS" == "true" ]]; then
+        sed -i \
+             -e "s#// transcribingEnabled:.*#transcribingEnabled: true,#" \
+             /config/config.js
+    fi
+fi
+
+if [[ ! -f /config/interface_config.js ]]; then
+    cp /defaults/interface_config.js /config/interface_config.js
+
+    # It will remove parameter 'closedcaptions' from TOOLBAR_BUTTONS if ENABLE_TRANSCRIPTIONS is false,
+    # because it enabled by default, but not supported out of the box.
+    if [[ $ENABLE_TRANSCRIPTIONS -ne 1 || "$ENABLE_TRANSCRIPTIONS" != "true" ]]; then
+        sed -i \
+            -e "s#'closedcaptions', ##" \
+            /config/interface_config.js
+    fi
+
+fi
+
