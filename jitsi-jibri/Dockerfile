@@ -1,13 +1,11 @@
 FROM jitsi/base-java
 
-ARG JITSI_RELEASE=unstable
 ARG CHROME_RELEASE=latest
 ARG CHROMEDRIVER_MAJOR_RELEASE=latest
 
 RUN \
-	echo "deb https://download.jitsi.org $JITSI_RELEASE/" > /etc/apt/sources.list.d/jitsi.list \
-	&& apt-dpkg-wrap apt-get update \
-	&& apt-dpkg-wrap apt-get install -y jibri jitsi-upload-integrations \
+	apt-dpkg-wrap apt-get update \
+	&& apt-dpkg-wrap apt-get install -y jibri \
 	&& apt-cleanup
 
 RUN \
@@ -28,13 +26,20 @@ RUN \
 	|| true
 
 RUN \
-	[ ${CHROMEDRIVER_MAJOR_RELEASE} = "latest" ] \
+	[ "${CHROMEDRIVER_MAJOR_RELEASE}" = "latest" ] \
 	&& CHROMEDRIVER_RELEASE="$(curl -4Ls https://chromedriver.storage.googleapis.com/LATEST_RELEASE)" \
 	|| CHROMEDRIVER_RELEASE="$(curl -4Ls https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROMEDRIVER_MAJOR_RELEASE})" \
 	&& curl -4Ls https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_RELEASE}/chromedriver_linux64.zip \
 	| zcat >> /usr/bin/chromedriver \
 	&& chmod +x /usr/bin/chromedriver \
 	&& chromedriver --version
+
+RUN \
+        [ "$JITSI_RELEASE" = "unstable" ] \
+        && apt-dpkg-wrap apt-get update \
+        && apt-dpkg-wrap apt-get install -y jitsi-upload-integrations \
+        && apt-cleanup \
+        || true
 
 COPY rootfs/ /
 

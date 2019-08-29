@@ -1,11 +1,5 @@
 #!/usr/bin/with-contenv bash
 
-# set mapping to prosody and web from external jibri
-if [[ ! -z ${JIBRI_EXTERNAL_INSTANCE} ]]; then
-  echo "${DOCKER_HOST_ADDRESS}	${XMPP_DOMAIN}" >> /etc/hosts
-  echo "${DOCKER_HOST_ADDRESS}  ${XMPP_SERVER}" >> /etc/hosts
-fi
-
 # DISPLAY is necessary for start
 [ -z "${DISPLAY}" ] \
 && ( echo -e "\e[31mERROR: Please set DISPLAY variable.\e[39m"; kill 1; exit 1 )
@@ -23,13 +17,6 @@ usermod -aG ${host_audio_group} jibri
 
 # script for finalizing must have executing bit.
 [ ! -z "${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}" ] \
-&& [ -f "${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}" ] \
-&& [ ! -x "${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}" ] \
-&& chmod +x ${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}
-
-# dropbox finalize
-[ ! -z "${JIBRI_DROPBOX_APIKEY}" ] \
-&& tpl /defaults/dropbox_upload.sh > ${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH} \
 && [ ! -x "${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}" ] \
 && chmod +x ${JIBRI_FINALIZE_RECORDING_SCRIPT_PATH}
 
