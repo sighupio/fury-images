@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-while docker ps; do echo docker not ready && sleep 5; done
+let i=0; while (! docker ps ); do let i=i+1; [ $i -le 12 ] || exit 1 && sleep 5; done
 kind create cluster --name "$NAME" --config /kind-config --wait 1m --loglevel=debug
 export KUBECONFIG="$(kind get kubeconfig-path --name="$NAME")"
 sed -i -E -e 's/localhost|0\.0\.0\.0/'"$CLUSTER_HOST"'/g' "$KUBECONFIG"
