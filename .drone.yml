@@ -25,7 +25,7 @@ steps:
     pull: always
     commands:
       - docker login -p $TOKEN -u $USER quay.io
-      - apk add --no-cache python3 py-yaml
+      - apk add --no-cache python3 py-yaml git
       - ./build.py quay.io $(git diff --name-only HEAD~4..HEAD . | xargs echo)
     volumes:
       - name: dockersock
