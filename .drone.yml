@@ -26,7 +26,8 @@ steps:
     commands:
       - docker login -p $TOKEN -u $USER quay.io
       - apk add --no-cache python3 py-yaml git
-      - git diff --name-only HEAD~4..HEAD . | xargs echo
+      - modified=$(git diff --name-only HEAD~4..HEAD . | xargs echo)
+      - echo $modified
       - ./build.py quay.io $modified
     volumes:
       - name: dockersock
