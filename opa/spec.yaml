@@ -4,5 +4,3 @@ tags:
     - 0.15.0-dev
   ALPINE:
     - 3.10
-  USER:
-    - 0
