@@ -1,12 +1,12 @@
 ARG OPA
-FROM openpolicyagent/opa:${OPA} AS opa
+FROM openpolicyagent/opa:${OPA} as opa
 
 ARG ALPINE
 FROM alpine:${ALPINE}
 
 COPY --from=opa /opa /opa
 
-ARG USER 0
+ARG USER
 
 USER ${USER}
 
