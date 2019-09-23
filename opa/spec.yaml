@@ -4,3 +4,5 @@ tags:
     - 0.15.0-dev
   ALPINE:
     - 3.10
+  BUSYBOX:
+    - 1.31.0
