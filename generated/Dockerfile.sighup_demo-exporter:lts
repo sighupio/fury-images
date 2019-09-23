@@ -1,5 +1,0 @@
-FROM node:lts
-
-COPY server.js /server.js
-
-CMD [ "node", "/server.js" ]
