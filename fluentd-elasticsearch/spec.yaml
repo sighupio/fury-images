@@ -1,4 +1,4 @@
 image: sighup/fluentd-elasticsearch
 tags:
   FLUENTD:
-    - v1.7.2-debian-1.0
+    - v1.2.5-debian
