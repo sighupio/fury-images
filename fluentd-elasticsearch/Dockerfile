@@ -16,7 +16,7 @@ ENV FLUENTD_DISABLE_BUNDLER_INJECTION 1
 
 COPY Gemfile* /fluentd/
 
-RUN buildDeps="sudo make gcc g++ libc-dev libc-ruby libffi-dev" \
+RUN buildDeps="sudo make gcc g++ libc-dev ruby-dev libffi-dev" \
      && apt-get update \
      && apt-get install \
      -y --no-install-recommends \
