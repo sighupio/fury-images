@@ -1,7 +1,5 @@
 image: sighup/jenkins-agent-kubectl
 tags:
-  BASE_IMAGE_VERSION:
-    - 3.35-5
   KUBECTL:
     - 1.11.8
     - 1.12.6
