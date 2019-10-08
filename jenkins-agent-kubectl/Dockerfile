@@ -1,4 +1,4 @@
-FROM jenkins/jnlp-slave:3.27-1
+FROM jenkins/jnlp-slave:${BASE_IMAGE_VERSION}
 
 
 RUN mkdir -p /home/jenkins/bin
