@@ -1,11 +1,13 @@
 ARG OPA
+ARG CONFTEST
 ARG ALPINE
 ARG BUSYBOX
+
 FROM openpolicyagent/opa:${OPA} as opa
 
 FROM busybox:${BUSYBOX} as conftest
-RUN wget https://github.com/instrumenta/conftest/releases/download/v0.11.0/conftest_0.11.0_Linux_x86_64.tar.gz
-RUN tar xvzf conftest_0.11.0_Linux_x86_64.tar.gz 
+RUN wget https://github.com/instrumenta/conftest/releases/download/v${CONFTEST}/conftest_${CONFTEST}_Linux_x86_64.tar.gz
+RUN tar xvzf conftest_${CONFTEST}_Linux_x86_64.tar.gz
 
 FROM alpine:${ALPINE}
 

@@ -6,3 +6,5 @@ tags:
     - 3.10
   BUSYBOX:
     - 1.31.0
+  CONFTEST:
+    - 0.14.0
