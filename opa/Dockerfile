@@ -11,7 +11,5 @@ RUN tar xvzf conftest_${CONFTEST}_Linux_x86_64.tar.gz
 
 FROM alpine:${ALPINE}
 
-COPY --from=opa /opa /opa
+COPY --from=opa /opa /bin/
 COPY --from=conftest conftest /bin/
-ENTRYPOINT ["/opa"]
-CMD ["run"]
