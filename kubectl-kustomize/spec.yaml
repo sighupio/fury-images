@@ -1,11 +1,10 @@
 image: sighup/kubectl-kustomize
 tags:
   KUBECTL:
-    - 1.11.7
-    - 1.12.5
-    - 1.13.2
-    - 1.13.4
-    - 1.13.5
+    - 1.13.11
+    - 1.14.7
+    - 1.15.4
+    - 1.16.1
   KUSTOMIZE:
     - 1.0.10
     - 1.0.11

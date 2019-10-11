@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-RUN apk add curl ca-certificates --no-cache --update
+RUN apk add bash curl ca-certificates --no-cache --update
 ARG KUBECTL
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl && \
