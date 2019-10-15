@@ -10,7 +10,7 @@ RUN wget https://github.com/instrumenta/conftest/releases/download/v${CONFTEST}/
 RUN tar xvzf conftest_${CONFTEST}_Linux_x86_64.tar.gz
 
 FROM alpine:${ALPINE}
-
+RUN addgroup -S opa && adduser -S opa -G opa
 USER opa:opa
 COPY --chown=opa:opa --from=opa /opa /bin/
 COPY --chown=opa:opa --from=conftest conftest /bin/
