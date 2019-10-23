@@ -1,0 +1,4 @@
+image: sighup/dind-gnupg-curl
+tags:
+  DIND:
+    - 19.03
