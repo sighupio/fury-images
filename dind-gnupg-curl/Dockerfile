@@ -1,6 +1,5 @@
 ARG DIND
-FROM docker:${DIND}-stable-dind
+FROM docker:${DIND}-dind
 
-RUN apk --no-cache gnupg
-RUN apk --no-cache curl
+RUN apk add --no-cache gnupg curl
 
