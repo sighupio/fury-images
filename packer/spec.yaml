@@ -1,0 +1,8 @@
+image: sighup/packer
+tags:
+  ANSIBLE:
+    - 2.8.5
+  PACKER:
+    - 1.4.4
+  DEBIAN:
+    - 10
