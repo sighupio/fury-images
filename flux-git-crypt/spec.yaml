@@ -1,0 +1,6 @@
+image: sighup/flux-git-crypt
+tags:
+  FLUX:
+    - 1.15.0
+  KUSTOMIZE:
+    - 1.0.10
