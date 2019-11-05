@@ -1,0 +1,5 @@
+image: sighup/clair-local-scanner
+tags:
+  CLAIR_SCANNER:
+    - "12"
+
