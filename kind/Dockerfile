@@ -17,5 +17,5 @@ COPY setup.sh .
 ENTRYPOINT ["bash", "-c"]
 ENV NAME test
 ENV K8S_VERSION ${KUBERNETES}
-CMD ["bash /tests/setup.sh && export KUBECONFIG=\"$(kind get kubeconfig-path --name=\"$NAME\")\" && bats -p $TESTS"]
+CMD ["bash /tests/setup.sh && export KUBECONFIG=/kubeconfig && bats -p $TESTS"]
 
