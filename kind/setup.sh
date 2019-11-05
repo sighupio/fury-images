@@ -115,7 +115,7 @@ subjects:
     namespace: default
 ---
 # Source: hostpath-provisioner/templates/deployment.yaml
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: release-name-hostpath-provisioner
