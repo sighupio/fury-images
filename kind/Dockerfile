@@ -12,7 +12,7 @@ RUN apk add --no-cache git make musl-dev go jq curl bash nodejs nodejs-npm opens
 
 WORKDIR /tests
 ENV PATH="${PATH}:/root/go/bin"
-COPY kind-config-${KIND} /kind-config
+COPY kind-config-${KUBERNETES} /kind-config
 COPY setup.sh .
 ENTRYPOINT ["bash", "-c"]
 ENV NAME test
