@@ -141,6 +141,15 @@ authentication = "internal_plain"
 --sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
 --sql = { driver = "PostgreSQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
 
+sql = {
+  driver = "MySQL";
+  database = "{{ .Env.DATABASE_NAME }}";
+  username = "{{ .Env.DATABASE_USER }}";
+  password = "{{ .Env.DATABASE_PASSWORD }}";
+  host = "{{ .Env.DATABASE_HOST }}";
+  port = 3306;
+}
+
 -- Logging configuration
 -- For advanced logging see http://prosody.im/doc/logging
 --
