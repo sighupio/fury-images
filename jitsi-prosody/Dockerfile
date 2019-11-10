@@ -10,6 +10,7 @@ RUN \
       libsasl2-dev \
       libssl1.0-dev \
       lua-basexx \
+      lua-dbi-mysql \
       lua-ldap \
       luarocks \
       git \

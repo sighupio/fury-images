@@ -136,6 +136,8 @@ authentication = "internal_plain"
 --storage = "sql" -- Default is "internal" (Debian: "sql" requires one of the
 -- lua-dbi-sqlite3, lua-dbi-mysql or lua-dbi-postgresql packages to work)
 
+storage = "sql"
+
 -- For the "sql" backend, you can uncomment *one* of the below to configure:
 --sql = { driver = "SQLite3", database = "prosody.sqlite" } -- Default. 'database' is the filename.
 --sql = { driver = "MySQL", database = "prosody", username = "prosody", password = "secret", host = "localhost" }
