@@ -1,4 +1,5 @@
 image: sighup/debug-tools
 tags:
   DEBIAN:
+    - buster
     - stretch
