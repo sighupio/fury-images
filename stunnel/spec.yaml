@@ -1,4 +1,4 @@
 image: sighup/stunnel
 tags:
-  STUNNEL:
+  STUNNEL_VERSION:
     - 5.44
