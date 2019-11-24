@@ -12,6 +12,7 @@ RUN \
       lua-basexx \
       lua-dbi-mysql \
       lua-ldap \
+      lua-sec \
       luarocks \
       git \
       gcc \
