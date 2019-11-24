@@ -1,0 +1,4 @@
+image: sighup/stunnel
+tags:
+  STUNNEL:
+    - 5.44
