@@ -149,7 +149,7 @@ sql = {
   username = "{{ .Env.DATABASE_USER }}";
   password = "{{ .Env.DATABASE_PASSWORD }}";
   host = "{{ .Env.DATABASE_HOST }}";
-  port = 3306;
+  port = "{{ .Env.DATABASE_PORT }}";
 }
 
 -- Logging configuration
