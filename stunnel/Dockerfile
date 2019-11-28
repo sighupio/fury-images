@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:buster-slim
 
 ARG STUNNEL_VERSION
 
@@ -6,7 +6,6 @@ RUN set -x && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential \
       libssl-dev \
-      cron \
       procps \
       wget && \
     wget ftp://ftp.stunnel.org/stunnel/archive/5.x/stunnel-${STUNNEL_VERSION}.tar.gz && \
@@ -17,9 +16,6 @@ RUN set -x && \
     make install && \
     cd .. && \
     rm -rf stunnel-${STUNNEL_VERSION} stunnel-${STUNNEL_VERSION}.tar.gz && \
-    # DEBIAN_FRONTEND=noninteractive apt-get purge -y build-essential \
-    #   libssl-dev \
-    #   wget && \
     rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["/bin/sh", "-c", "service cron start && stunnel"]
+ENTRYPOINT ["stunnel"]

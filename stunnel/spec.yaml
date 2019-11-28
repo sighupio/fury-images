@@ -2,3 +2,4 @@ image: sighup/stunnel
 tags:
   STUNNEL_VERSION:
     - 5.44
+    - 5.56
