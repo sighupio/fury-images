@@ -1,8 +1,8 @@
 image: sighup/kubectl-kustomize-gitcrypt
 tags:
-  GIT_CRYPT:
-    - 0.6.0
   KUSTOMIZE:
     - 1.0.10
   KUBECTL:
     - 1.15.1
+  GIT_CRYPT:
+    - 0.6.0
