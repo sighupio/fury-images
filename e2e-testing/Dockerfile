@@ -11,7 +11,7 @@ ARG BATS
 RUN apt-get update && apt-get upgrade -yq && apt-get dist-upgrade -yq && apt-get autoclean -yq && \
     apt-get autoremove -yq
 
-RUN apt-get install -yq make git curl ca-certificates npm
+RUN apt-get install -yq make git curl ca-certificates npm jq
 
 RUN npm install -g bats@${BATS}
 
@@ -44,6 +44,7 @@ RUN curl -LOs https://github.com/kubernetes-sigs/kustomize/releases/download/kus
 RUN make --version && \
     kubectl version --client && \
     helm version --client && \
+    jq --version && \
     yq --version && \
     istioctl version --remote=false && \
     furyctl version && \
