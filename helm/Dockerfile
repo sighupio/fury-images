@@ -8,3 +8,5 @@ RUN tar xvzf helm-v${HELM}-linux-amd64.tar.gz
 
 FROM alpine:${ALPINE}
 COPY --from=downloader linux-amd64/helm /bin/helm 
+RUN helm plugin install https://github.com/instrumenta/helm-conftest
+
