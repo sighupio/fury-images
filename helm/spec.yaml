@@ -1,6 +1,4 @@
 image: sighup/helm
 tags:
   HELM:
-    - 3.0.0
-  ALPINE:
-    - 3.10.2
+    - 3.0.1

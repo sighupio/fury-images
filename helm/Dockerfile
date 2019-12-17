@@ -1,12 +1,12 @@
-ARG ALPINE
-
-FROM alpine:${ALPINE} as downloader
 ARG HELM
 
-RUN wget https://get.helm.sh/helm-v${HELM}-linux-amd64.tar.gz
-RUN tar xvzf helm-v${HELM}-linux-amd64.tar.gz
+FROM alpine/helm:${HELM}
 
-FROM alpine:${ALPINE}
-COPY --from=downloader linux-amd64/helm /bin/helm 
-RUN helm plugin install https://github.com/instrumenta/helm-conftest
+ENV HELM_HOME /root/.helm
 
+RUN apk add --update --no-cache git curl bash
+RUN helm plugin install --debug https://github.com/instrumenta/helm-conftest
+
+WORKDIR "/chart"
+
+CMD ["conftest", "."]
