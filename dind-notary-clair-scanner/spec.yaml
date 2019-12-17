@@ -1,0 +1,10 @@
+image: sighup/dind-notary-clair-scanner
+tags:
+  DIND:
+    - "19.03"
+  CLAIR_SCANNER:
+    - "12"
+  NOTARY:
+    - "0.6.1"
+  BUSYBOX:
+    - "1.31.0"
