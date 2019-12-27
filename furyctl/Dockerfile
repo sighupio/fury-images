@@ -1,5 +1,9 @@
 ARG ALPINE
-FROM alpine:${ALPINE}
+FROM alpine:${ALPINE:-3.11}
+
+RUN apk add git openssh curl
+
 ARG FURYCTL
-RUN wget https://s3.wasabisys.com/sighup-releases/linux/${FURYCTL}/furyctl \
-	&& chmod +x furyctl && mv furyctl /usr/local/bin && apk add git openssh
+
+RUN curl -Ls https://github.com/sighupio/furyctl/releases/download/${FURYCTL}/furyctl-linux-amd64 -o furyctl \
+	&& chmod +x furyctl && mv furyctl /usr/local/bin
