@@ -1,6 +1,9 @@
 ARG FURYCTL
 FROM sighup/furyctl:${FURYCTL}
+RUN apk add --no-cache bash nodejs npm curl && npm install -g bats
+
 ARG KUSTOMIZE
-RUN apk add --no-cache bash nodejs npm curl && npm install -g bats \
-  && curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE}/kustomize_${KUSTOMIZE}_linux_amd64 -o /usr/local/bin/kustomize \
-  && chmod +x /usr/local/bin/kustomize && kustomize version
+
+RUN curl -LOs https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${KUSTOMIZE}/kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 && \
+    chmod +x kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 && \
+    mv kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 /usr/local/bin/kustomize &&  kustomize version
