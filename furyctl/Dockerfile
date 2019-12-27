@@ -1,5 +1,4 @@
-ARG ALPINE
-FROM alpine:${ALPINE:-3.11}
+FROM alpine:3.11
 
 RUN apk add git openssh curl
 
