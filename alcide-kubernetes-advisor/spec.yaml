@@ -1,0 +1,4 @@
+image: sighup/alicde-kubernetes-advisor
+tags:
+  alcide:
+    - "latest"
