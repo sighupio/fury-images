@@ -1,4 +1,4 @@
-image: sighupio/drone-kustomize
+image: sighup/drone-kustomize
 tags:
   KUBECTL:
     - 1.15.4
