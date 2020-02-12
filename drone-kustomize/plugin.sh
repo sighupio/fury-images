@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -x pipefail
+set -euo pipefail
 cd $PLUGIN_BASEPATH
 
 if [ -n "$PLUGIN_KUBECONFIG" ];then
