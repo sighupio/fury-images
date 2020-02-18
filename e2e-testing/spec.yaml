@@ -12,7 +12,7 @@ tags:
   ISTIOCTL:
     - 1.4.0
   FURYCTL:
-    - 0.1.4
+    - 0.2.2
   KUSTOMIZE:
     - 3.2.2
   BATS:
