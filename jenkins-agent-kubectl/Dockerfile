@@ -14,6 +14,7 @@ RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v${KU
     kustomize version
 
 USER root
-RUN  apt-get update -y
-RUN  apt-get install -y git-crypt
+RUN  apt-get update -y && \
+     apt-get install -y git-crypt && \
+     rm -rf /var/lib/apt/lists/*
 USER jenkins
