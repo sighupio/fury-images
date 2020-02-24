@@ -1,0 +1,4 @@
+image: sighup/stress
+tags:
+  UBUNTU:
+    - 18.04
