@@ -1,6 +1,4 @@
 image: sighup/activemq-artemis
 tags:
-  OPENJDK:
-    - 8u232-jre-stretch
   ACTIVEMQ_ARTEMIS_VERSION:
     - 2.10.1
