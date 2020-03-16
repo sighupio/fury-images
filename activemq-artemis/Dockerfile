@@ -3,8 +3,7 @@
 ##########################################################
 ## Build Image                                           #
 ##########################################################
-ARG OPENJDK
-FROM openjdk:${OPENJDK} as builder
+FROM openjdk:8u171-jdk-stretch as builder
 
 ARG ACTIVEMQ_ARTEMIS_VERSION
 ARG ACTIVEMQ_DISTRIBUTION_URL
