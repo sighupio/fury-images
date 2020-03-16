@@ -3,8 +3,8 @@
 ##########################################################
 ## Build Image                                           #
 ##########################################################
-ARG BASE_IMAGE
-FROM openjdk:8u171-jdk-stretch as builder
+ARG OPENJDK
+FROM openjdk:${OPENJDK} as builder
 
 ARG ACTIVEMQ_ARTEMIS_VERSION
 ARG ACTIVEMQ_DISTRIBUTION_URL
@@ -119,9 +119,9 @@ COPY assets/jmx-exporter-config.yaml /opt/jmx-exporter/etc/
 ##########################################################
 ## Run Image                                             #
 ##########################################################
-ARG BASE_IMAGE
+ARG OPENJDK
 # hadolint ignore=DL3006
-FROM $BASE_IMAGE
+FROM openjdk:${OPENJDK}
 LABEL maintainer="Victor Romero <victor.romero@gmail.com>"
 ARG ACTIVEMQ_ARTEMIS_VERSION
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
