@@ -2,7 +2,7 @@
 set -e
 
 BROKER_HOME=/var/lib/artemis
-BROKER_DATA=/var/lib/artemis/data
+BROKER_DATA="${BROKER_DATA:-/var/lib/artemis/data}"
 OVERRIDE_PATH=$BROKER_HOME/etc-override
 CONFIG_PATH=$BROKER_HOME/etc
 export BROKER_HOME BROKER_DATA OVERRIDE_PATH CONFIG_PATH
