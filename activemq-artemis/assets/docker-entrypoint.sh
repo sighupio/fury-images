@@ -2,9 +2,16 @@
 set -e
 
 BROKER_HOME=/var/lib/artemis
+BROKER_DATA=/var/lib/artemis/data
 OVERRIDE_PATH=$BROKER_HOME/etc-override
 CONFIG_PATH=$BROKER_HOME/etc
-export BROKER_HOME OVERRIDE_PATH CONFIG_PATH
+export BROKER_HOME BROKER_DATA OVERRIDE_PATH CONFIG_PATH
+
+if [ "$BROKER_DATA" != "/var/lib/artemis/data" ]; then
+  echo "Creating symbolic link to $BROKER_DATA"
+  rm -rf /var/lib/artemis/data
+  ln -s "$BROKER_DATA" /var/lib/artemis/data
+fi
 
 # In case this is running in a non standard system that automounts
 # empty volumes like OpenShift, restore the configuration into the
