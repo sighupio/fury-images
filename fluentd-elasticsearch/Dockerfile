@@ -16,21 +16,23 @@ ENV FLUENTD_DISABLE_BUNDLER_INJECTION 1
 
 COPY Gemfile* /fluentd/
 
-RUN buildDeps="sudo make gcc g++ libc-dev ruby-dev libffi-dev" \
-     && apt-get update \
+RUN buildDeps="sudo make gcc g++ libc-dev libffi-dev" \
+   runtimeDeps="" \
+      && apt-get update \
+     && apt-get upgrade -y \
      && apt-get install \
      -y --no-install-recommends \
-     $buildDeps net-tools apt-utils \
+     $buildDeps $runtimeDeps net-tools \
     && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
-    && gem install bundler --version 1.17.2 \
+    && gem install bundler --version 2.1.2 \
     && bundle config silence_root_warning true \
     && bundle install --gemfile=/fluentd/Gemfile --path=/fluentd/vendor/bundle \
-    && sudo gem sources --clear-all \
     && SUDO_FORCE_REMOVE=yes \
     apt-get purge -y --auto-remove \
                   -o APT::AutoRemove::RecommendsImportant=false \
                   $buildDeps \
     && rm -rf /var/lib/apt/lists/* \
+    && gem sources --clear-all \
     && rm -rf /tmp/* /var/tmp/* \
        /usr/lib/ruby/gems/*/cache/*.gem \
        /usr/local/bundle/cache/*.gem \
