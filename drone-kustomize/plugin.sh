@@ -24,4 +24,8 @@ fi
 if [ -n "$PLUGIN_IMAGE_5" ];then
   kustomize edit set imagetag $PLUGIN_IMAGE_5:$PLUGIN_SHA_5
 fi
-kustomize build | kubectl apply -f-
+kustomize build | kubectl apply -f -
+
+if [ -n "$PLUGIN_ROLLOUT_DEPLOYMENT" ];then
+  kubectl rollout status deployment $PLUGIN_ROLLOUT_DEPLOYMENT -n $PLUGIN_ROLLOUT_NAMESPACE --timeout=180s
+fi

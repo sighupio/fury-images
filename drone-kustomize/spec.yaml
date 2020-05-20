@@ -1,9 +1,6 @@
 image: sighup/drone-kustomize
 tags:
   KUBECTL:
-    - 1.15.4
+    - 1.15.5
   KUSTOMIZE:
     - 1.0.10
-  TYPE:
-    - single
-    - multi
