@@ -8,6 +8,7 @@ WORKDIR /build/drone
 RUN git checkout v1.7.0
 RUN go build -tags "oss nolimit" github.com/drone/drone/cmd/drone-server
 
+
 FROM drone/drone:1.7.0
 RUN rm /bin/drone-server
 COPY --from=builder /build/drone/drone-server /bin/drone-server
