@@ -6,7 +6,7 @@ RUN apk add git build-base
 RUN git clone https://github.com/drone/drone.git
 WORKDIR /build/drone
 RUN git checkout v1.7.0
-RUN go build -tags "oss nolimit" github.com/drone/drone/cmd/drone-server
+RUN go build -tags "nolimit" github.com/drone/drone/cmd/drone-server
 
 
 FROM drone/drone:1.7.0
