@@ -1,0 +1,5 @@
+image: sighup/skopeo
+tags:
+  SKOPEO_VERSION:
+    - master
+    - v1.0.0
