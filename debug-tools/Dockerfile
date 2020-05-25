@@ -3,6 +3,7 @@ FROM debian:${DEBIAN}
 
 RUN apt-get update \
       && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          curl \
           dnsutils \
           iputils-ping \
           iputils-tracepath \
