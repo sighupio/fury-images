@@ -27,5 +27,5 @@ fi
 kustomize build | kubectl apply -f -
 
 if [ -n "$PLUGIN_ROLLOUT_DEPLOYMENT" ];then
-  kubectl rollout status deployment $PLUGIN_ROLLOUT_DEPLOYMENT -n $PLUGIN_ROLLOUT_NAMESPACE --timeout=180s
+  kubectl rollout status deployment $PLUGIN_ROLLOUT_DEPLOYMENT -n $PLUGIN_ROLLOUT_NAMESPACE --timeout=${PLUGIN_ROLLOUT_TIMEOUT:-"180s"}
 fi

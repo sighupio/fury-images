@@ -13,4 +13,5 @@ steps:
       image: yourimage
       rollout_deployment: yourdeployment # optional
       rollout_namespace: your-namespace #optional
+      rollout_timeout: 360s # optional, defaults to 180s
 ```
