@@ -37,9 +37,10 @@ RUN curl -LOs https://github.com/sighupio/furyctl/releases/download/v${FURYCTL}/
     chmod +x furyctl-linux-amd64 && \
     mv furyctl-linux-amd64 /usr/local/bin/furyctl
 
-RUN curl -LOs https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${KUSTOMIZE}/kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 && \
-    chmod +x kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 && \
-    mv kustomize_kustomize.v${KUSTOMIZE}_linux_amd64 /usr/local/bin/kustomize
+RUN curl -LOs https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v${KUSTOMIZE}/kustomize_v${KUSTOMIZE}_linux_amd64.tar.gz && \
+    tar -zxvf kustomize_v${KUSTOMIZE}_linux_amd64.tar.gz && \
+    chmod +x kustomize && \
+    mv kustomize /usr/local/bin/kustomize
 
 RUN make --version && \
     kubectl version --client && \
