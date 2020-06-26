@@ -8,4 +8,4 @@ tags:
   KUSTOMIZE:
     - 1.0.10
     - 2.0.3
-    - 3.5.3
+    - kustomize/v3.5.3
