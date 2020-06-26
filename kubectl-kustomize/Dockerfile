@@ -1,12 +1,26 @@
-FROM alpine:3.9
+FROM ubuntu:latest as builder
 
-RUN apk add bash curl ca-certificates --no-cache --update
+RUN apt-get update && apt-get install curl wget -y
+
 ARG KUBECTL
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl && \
     kubectl version --client
 
+RUN wget https://github.com/nutellinoit/kubenvz/releases/download/v0.3.0/kubenvz_linux_x64_v0.3.0.tar.gz -O kubenvz.tar.gz
+RUN tar -zxvf kubenvz.tar.gz
+RUN ls -la
+
 ARG KUSTOMIZE
-RUN curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/v${KUSTOMIZE}/kustomize_${KUSTOMIZE}_linux_amd64 -o /usr/local/bin/kustomize && \
-    chmod +x /usr/local/bin/kustomize && \
-    kustomize version
+
+RUN /kubenvz kustomize install $(/kubenvz kustomize list remote | grep ${KUSTOMIZE})
+RUN /kubenvz kustomize use ${KUSTOMIZE}
+RUN cp $(readlink $(which kustomize)) /kustomize
+
+RUN /kustomize version
+
+FROM alpine:3.9
+COPY --from=builder /usr/local/bin/kubectl /usr/local/bin/kubectl
+RUN kubectl version --client
+COPY --from=builder /kustomize /usr/local/bin/kustomize
+RUN kustomize version
