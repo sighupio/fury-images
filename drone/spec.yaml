@@ -2,3 +2,4 @@ image: sighup/drone
 tags:
   DRONE:
     - 1.7.0
+    - 1.8.1
