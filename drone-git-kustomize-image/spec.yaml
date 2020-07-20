@@ -1,0 +1,4 @@
+image: sighup/drone-git-kustomize-image
+tags:
+  KUSTOMIZE:
+    - 1.0.10
