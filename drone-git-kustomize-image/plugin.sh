@@ -18,6 +18,9 @@ if [ -n "$PLUGIN_IMAGE_5" ];then
   kustomize edit set imagetag $PLUGIN_IMAGE_5:$PLUGIN_SHA_5
 fi
 
+git config --global user.email "drone@sighup.io"
+git config --global user.name "Drone CI/CD"
+
 git add .
 
 git commit -m "${PLUGIN_COMMIT_MESSAGE}"
