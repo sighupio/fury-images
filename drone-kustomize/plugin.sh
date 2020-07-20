@@ -11,7 +11,9 @@ if [ -n "$PLUGIN_KUBECONFIG" ];then
 fi
 
 kustomize build > /dev/null
-kustomize edit set imagetag $PLUGIN_IMAGE:$PLUGIN_SHA
+if [ -n "$PLUGIN_IMAGE" ];then
+  kustomize edit set imagetag $PLUGIN_IMAGE:$PLUGIN_SHA
+fi
 if [ -n "$PLUGIN_IMAGE_2" ];then
   kustomize edit set imagetag $PLUGIN_IMAGE_2:$PLUGIN_SHA_2
 fi
