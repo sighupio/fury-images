@@ -3,6 +3,8 @@
 set -eo pipefail
 cd /tmp
 
+git config credential.helper '!f() { sleep 1; echo "username=${PLUGIN_GIT_USER}"; echo "password=${PLUGIN_GIT_PASSWORD}"; }; f'
+
 git clone $PLUGIN_REPOSITORY
 
 cd $PLUGIN_REPOSITORY/$PLUGIN_FOLDER
