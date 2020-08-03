@@ -1,0 +1,6 @@
+image: sighup/starboard
+tags:
+  STARBOARD:
+    - v0.2.6
+  KUBECTL:
+    - v1.17.5
