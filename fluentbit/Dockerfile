@@ -1,0 +1,2 @@
+ARG FLUENTBIT
+FROM fluent/fluent-bit:${FLUENTBIT}

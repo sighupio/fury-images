@@ -1,0 +1,4 @@
+image: sighup/fluentbit
+tags:
+  FLUENTBIT:
+    - 1.4.4
