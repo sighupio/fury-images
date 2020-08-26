@@ -1,0 +1,4 @@
+image: sighup/fluentd
+tags:
+  FLUENTD:
+    - v1.10.4-debian-1.0
