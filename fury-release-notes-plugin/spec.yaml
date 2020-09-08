@@ -1,0 +1,6 @@
+image: sighup/fury-release-notes-plugin
+tags:
+  PYTHON:
+    - 3.7
+  SEMANTIC_VERSION:
+    - 2.8.4
