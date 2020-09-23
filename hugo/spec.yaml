@@ -1,0 +1,4 @@
+image: sighup/hugo
+tags:
+  HUGO_VERSION:
+    - 0.62.2

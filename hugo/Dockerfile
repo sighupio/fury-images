@@ -1,0 +1,23 @@
+FROM node:12-alpine
+
+ARG HUGO_VERSION
+ENV HUGO_VERSION ${HUGO_VERSION:-0.62.2}
+ENV HUGO_NAME="hugo_extended_${HUGO_VERSION}_Linux-64bit"
+ENV HUGO_BASE_URL="https://github.com/gohugoio/hugo/releases/download"
+ENV HUGO_URL="${HUGO_BASE_URL}/v${HUGO_VERSION}/${HUGO_NAME}.tar.gz"
+
+WORKDIR /hugo
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+RUN apk add --no-cache --virtual .build-deps wget && \
+    apk add --no-cache \
+    git \
+    ca-certificates \
+    libc6-compat \
+    libstdc++ && \
+    wget --quiet "${HUGO_URL}" && \
+    tar -zxvf "${HUGO_NAME}.tar.gz" && \
+    mv ./hugo /usr/bin/hugo && \
+    apk del .build-deps && \
+    rm -rf /hugo
+
+WORKDIR /src
