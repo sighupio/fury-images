@@ -1,0 +1,6 @@
+image: sighup/cyberark-summon
+tags:
+  SUMMON:
+    - 0.8.3
+  SUMMON_CONJUR:
+    - 0.5.3
