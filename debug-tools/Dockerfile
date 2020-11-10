@@ -7,6 +7,7 @@ RUN apt-get update \
           dnsutils \
           iputils-ping \
           iputils-tracepath \
+          jq \
           nmap \
           tcptraceroute \
           telnet \
