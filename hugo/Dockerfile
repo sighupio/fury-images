@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:15-alpine
 
 ARG HUGO_VERSION
 ENV HUGO_VERSION ${HUGO_VERSION:-0.62.2}
