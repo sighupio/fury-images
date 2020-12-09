@@ -2,8 +2,9 @@ image: sighup/gitlab-runner-kubectl
 tags:
   GITLABRUNNER:
     - v12.10.2
+    - v13.3.2
   KUBECTL:
     - v1.15.12
-    - v1.16.9
-    - v1.17.5
-    - v1.18.2
+    - v1.16.15
+    - v1.17.14
+    - v1.18.12
