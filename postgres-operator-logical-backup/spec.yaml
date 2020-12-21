@@ -1,0 +1,4 @@
+image: sighup/postgres-operator-logical-backup
+tags:
+  VERSION:
+    - v1.5.0
