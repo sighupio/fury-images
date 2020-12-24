@@ -8,6 +8,8 @@ ARG FURYCTL
 ARG KUSTOMIZE
 ARG BATS
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get upgrade -yq && apt-get dist-upgrade -yq && apt-get autoclean -yq && \
     apt-get autoremove -yq
 
