@@ -2,8 +2,10 @@ image: sighup/curator
 tags:
   PYTHON:
     - 3.7-alpine
+    - 3.9-alpine
   CURATOR:
     - 5.8.1
+    - 5.8.3
   PYYAML:
     - 3.12
     - 3.13
