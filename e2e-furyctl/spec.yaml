@@ -1,0 +1,8 @@
+image: sighup/e2e-furyctl
+tags:
+  UBUNTU:
+    - 20.04
+  KUBECTL:
+    - v1.20.1
+  FURYAGENT:
+    - v0.2.2    
