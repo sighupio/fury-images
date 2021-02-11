@@ -3,6 +3,7 @@ FROM ubuntu:${UBUNTU}
 
 ARG KUBECTL=v1.20.1
 ARG FURYAGENT=v0.2.2
+ARG BATS=v1.2.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -23,6 +24,8 @@ RUN apt-get update && apt-get install -yqq curl ca-certificates gnupg && \
     ./aws/install && \
     curl -Ls https://storage.googleapis.com/kubernetes-release/release/${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
     curl -Ls https://github.com/sighupio/furyagent/releases/download/${FURYAGENT}/furyagent-linux-amd64 -o /usr/local/bin/furyagent && \
+    git clone --depth 1 --branch ${BATS} https://github.com/bats-core/bats-core.git && ./bats-core/install.sh /usr/local && \
+    rm -rf ./bats-core && \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/furyagent && \
     rm -rf /var/lib/apt/lists/* && \
