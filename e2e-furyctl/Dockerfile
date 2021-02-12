@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -yqq curl ca-certificates gnupg && \
     apt-get dist-upgrade -yq && \
     apt-get autoclean -yq && \
     apt-get autoremove -yq && \
-    apt-get install -yqq openvpn inetutils-ping netcat dnsutils git gettext jq ipcalc google-cloud-sdk unzip && \
+    apt-get install -yqq openvpn inetutils-ping netcat dnsutils git gettext jq ipcalc nmap google-cloud-sdk unzip && \
     curl -Ls https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip && \
     unzip awscliv2.zip && \
     ./aws/install && \
