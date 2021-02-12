@@ -4,6 +4,7 @@ FROM ubuntu:${UBUNTU}
 ARG KUBECTL=v1.20.1
 ARG FURYAGENT=v0.2.2
 ARG BATS=v1.2.1
+ARG WAIT_FOR=v2.0.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -24,10 +25,12 @@ RUN apt-get update && apt-get install -yqq curl ca-certificates gnupg && \
     ./aws/install && \
     curl -Ls https://storage.googleapis.com/kubernetes-release/release/${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
     curl -Ls https://github.com/sighupio/furyagent/releases/download/${FURYAGENT}/furyagent-linux-amd64 -o /usr/local/bin/furyagent && \
+    curl -Ls https://github.com/eficode/wait-for/releases/download/${WAIT_FOR}/wait-for -o /usr/local/bin/wait-for && \
     git clone --depth 1 --branch ${BATS} https://github.com/bats-core/bats-core.git && ./bats-core/install.sh /usr/local && \
     rm -rf ./bats-core && \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/furyagent && \
+    chmod +x /usr/local/bin/wait-for && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf ./aws ./awscliv2.zip
 
