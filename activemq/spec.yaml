@@ -1,0 +1,6 @@
+image: sighup/activemq
+tags:
+  ACTIVEMQ_VERSION:
+    - 5.15.6
+  AGENT_VERSION:
+    - 0.12.0

@@ -1,0 +1,37 @@
+---
+startDelaySeconds: 0
+ssl: false
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+blacklistObjectNames:
+  - "org.apache.activemq:clientId=*,*"
+whitelistObjectNames:
+  - "org.apache.activemq:destinationType=Queue,*"
+  - "org.apache.activemq:type=Broker,brokerName=*"
+
+rules:
+- pattern: org.apache.activemq<type=Broker, brokerName=(\S*), destinationType=Queue, destinationName=(\S*)><>QueueSize
+  name: activemq_queue_queue_size
+  type: GAUGE
+  labels:
+    destination: $2
+
+- pattern: org.apache.activemq<type=Broker, brokerName=(\S*), destinationType=Queue, destinationName=(\S*)><>ConsumerCount
+  name: activemq_queue_consumer_count
+  type: GAUGE
+  labels:
+    destination: $2
+
+- pattern: org.apache.activemq<type=Broker, brokerName=(\S*), destinationType=Queue, destinationName=(\S*)><>DequeueCount
+  name: activemq_queue_dequeue_count
+  type: COUNTER
+  labels:
+    destination: $2
+
+- pattern: org.apache.activemq<type=Broker, brokerName=(\S*)><>CurrentConnectionsCount
+  name: activemq_connections
+  type: GAUGE
+
+- pattern: org.apache.activemq<type=Broker, brokerName=(\S*)><>TotalConnectionsCount
+  name: activemq_connections_total
+  type: COUNTER
