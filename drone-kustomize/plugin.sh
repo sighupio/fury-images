@@ -12,19 +12,19 @@ fi
 
 kustomize build > /dev/null
 if [ -n "$PLUGIN_IMAGE" ];then
-  kustomize edit set imagetag $PLUGIN_IMAGE:$PLUGIN_SHA
+  kustomize edit set image $PLUGIN_IMAGE:$PLUGIN_SHA
 fi
 if [ -n "$PLUGIN_IMAGE_2" ];then
-  kustomize edit set imagetag $PLUGIN_IMAGE_2:$PLUGIN_SHA_2
+  kustomize edit set image $PLUGIN_IMAGE_2:$PLUGIN_SHA_2
 fi
 if [ -n "$PLUGIN_IMAGE_3" ];then
-  kustomize edit set imagetag $PLUGIN_IMAGE_3:$PLUGIN_SHA_3
+  kustomize edit set image $PLUGIN_IMAGE_3:$PLUGIN_SHA_3
 fi
 if [ -n "$PLUGIN_IMAGE_4" ];then
-  kustomize edit set imagetag $PLUGIN_IMAGE_4:$PLUGIN_SHA_4
+  kustomize edit set image $PLUGIN_IMAGE_4:$PLUGIN_SHA_4
 fi
 if [ -n "$PLUGIN_IMAGE_5" ];then
-  kustomize edit set imagetag $PLUGIN_IMAGE_5:$PLUGIN_SHA_5
+  kustomize edit set image $PLUGIN_IMAGE_5:$PLUGIN_SHA_5
 fi
 kustomize build | kubectl apply -f -
 
