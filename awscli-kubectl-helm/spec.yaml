@@ -1,0 +1,6 @@
+image: sighup/awscli-kubectl-helm
+tags:
+  KUBECTL:
+    - v1.18.12
+  HELM:
+    - v3.2.3
