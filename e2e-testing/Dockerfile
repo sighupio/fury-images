@@ -30,8 +30,8 @@ RUN curl -LOs https://github.com/mikefarah/yq/releases/download/${YQ}/yq_linux_a
     chmod +x yq_linux_amd64 && \
     mv yq_linux_amd64 /usr/local/bin/yq
 
-RUN curl -LOs https://github.com/istio/istio/releases/download/${ISTIOCTL}/istioctl-${ISTIOCTL}-linux.tar.gz && \
-    tar -zxvf istioctl-${ISTIOCTL}-linux.tar.gz && \
+RUN curl -LOs https://github.com/istio/istio/releases/download/${ISTIOCTL}/istioctl-${ISTIOCTL}-linux-amd64.tar.gz && \
+    tar -zxvf istioctl-${ISTIOCTL}-linux-amd64.tar.gz && \
     chmod +x istioctl && \
     mv istioctl /usr/local/bin/istioctl
 
