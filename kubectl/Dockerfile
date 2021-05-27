@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM alpine:3.13
 
 RUN apk add curl ca-certificates --no-cache --update
 ARG KUBECTL
