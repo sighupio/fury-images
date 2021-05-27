@@ -3,6 +3,6 @@ tags:
   PYTHON:
     - 3.8-alpine
   CURATOR:
-    - 5.8.3
+    - 5.8.4
   PYYAML:
     - 3.13
