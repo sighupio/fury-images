@@ -2,6 +2,15 @@
 
 SIMPLE_SNIFFER=$( gem contents fluent-plugin-elasticsearch | grep elasticsearch_simple_sniffer.rb )
 
+#source vars if file exists
+DEFAULT=/etc/default/fluentd
+
+if [ -r $DEFAULT ]; then
+    set -o allexport
+    . $DEFAULT
+    set +o allexport
+fi
+
 # If the user has supplied only arguments append them to `fluentd` command
 if [ "${1#-}" != "$1" ]; then
     set -- fluentd "$@"
