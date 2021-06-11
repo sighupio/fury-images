@@ -12,7 +12,7 @@ fi
 
 kustomize build > /dev/null
 if [ -n "$PLUGIN_IMAGE" ];then
-  kustomize edit set image $PLUGIN_IMAGE:$PLUGIN_SHA
+  kustomize edit set image $PLUGIN_IMAGE:$PLUGIN_SHA # This command **doesn't change** the image specified in your manifests
 fi
 if [ -n "$PLUGIN_IMAGE_2" ];then
   kustomize edit set image $PLUGIN_IMAGE_2:$PLUGIN_SHA_2
