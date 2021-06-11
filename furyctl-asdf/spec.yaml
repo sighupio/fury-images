@@ -1,0 +1,5 @@
+image: sighup/furyctl-eks
+tags:
+  - ASDF: 0.8.1
+  - FURYCTL: 0.5.0
+  - FURYAGENT: 0.2.3
