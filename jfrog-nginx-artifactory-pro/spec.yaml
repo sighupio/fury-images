@@ -1,6 +1,6 @@
-image: sighup/jfrog-nginx-artifactory-pro
+image: sighup/NGINXARTIFACTORYPRO
 tags:
-  JFROG-NGINX-ARTIFACTORY-PRO:
+  NGINXARTIFACTORYPRO:
     - 7.25.7
 
 
