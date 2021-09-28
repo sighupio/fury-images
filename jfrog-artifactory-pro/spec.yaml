@@ -1,4 +1,4 @@
-image: sighup/ARTIFACTORYPRO
+image: sighup/jfrog-artifactory-pro
 tags:
-  ARTIFACTORYPRO:
+  JFROG-ARTIFACTORY-PRO:
     - 7.25.7

@@ -1,2 +1,2 @@
-ARG ALPINE
-FROM releases-docker.jfrog.io/alpine:${ALPINE}
+ARG JFROG-ALPINE
+FROM releases-docker.jfrog.io/alpine:${JFROG-ALPINE}

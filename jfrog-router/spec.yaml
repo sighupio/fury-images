@@ -1,4 +1,4 @@
-image: sighup/ROUTER
+image: sighup/jfrog-router
 tags:
-  ROUTER:
+  JFROG-ROUTER:
     - 7.24.1

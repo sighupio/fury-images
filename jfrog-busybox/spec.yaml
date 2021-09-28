@@ -1,4 +1,4 @@
-image: sighup/BUSYBOX
+image: sighup/jfrog-busybox
 tags:
-  BUSYBOX:
+  JFROG-BUSYBOX:
     - 1.32.1
