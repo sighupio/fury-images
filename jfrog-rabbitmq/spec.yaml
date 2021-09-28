@@ -1,0 +1,4 @@
+image: sighup/jfrog-rabbitmq
+tags:
+  RABBITMQ:
+    - 3.8.14-debian-10-r32
