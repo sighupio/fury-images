@@ -1,0 +1,4 @@
+image: sighup/jfrog-alpine
+tags:
+  JFROG-ALPINE:
+    - 3.14.0
