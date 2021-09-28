@@ -1,2 +1,2 @@
-ARG JFROG-ROUTER
-FROM releases-docker.jfrog.io/jfrog/router:${JFROG-ROUTER}
+ARG ROUTER
+FROM releases-docker.jfrog.io/jfrog/router:${ROUTER}
