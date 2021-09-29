@@ -2,3 +2,4 @@ image: sighup/jfrog-busybox
 tags:
   BUSYBOX:
     - 1.32.1
+    - 1.33.1
