@@ -1,3 +1,3 @@
 ARG ELASTICSEARCH
-FROM releases-docker.jfrog.io/elasticsearch-sg:${ELASTICSEARCH}
+FROM releases-docker.jfrog.io/jfrog/elasticsearch-sg:${ELASTICSEARCH}
 
