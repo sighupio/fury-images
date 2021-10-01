@@ -1,0 +1,4 @@
+image: sighup/jfrog-redis
+tags:
+  REDIS:
+    - 6.2.1-debian-10-r9
