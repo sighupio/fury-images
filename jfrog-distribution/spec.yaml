@@ -1,4 +1,4 @@
 image: sighup/jfrog-distribution
 tags:
-  BUSYBOX:
+  DISTRIBUTION:
     - 2.9.2
