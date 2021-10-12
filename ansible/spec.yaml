@@ -1,0 +1,6 @@
+image: sighup/ansible-alpine
+tags:
+  ANSIBLE_VERSION:
+    - 2.11
+  ANSIBLE_LINT_VERSION:
+    - 5.2.0
