@@ -1,0 +1,4 @@
+image: sighup/fap-furyctl-runner
+tags:
+  FURYCTL:
+    - 0.0.1
