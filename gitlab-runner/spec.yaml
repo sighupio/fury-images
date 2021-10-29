@@ -2,3 +2,4 @@ image: sighup/gitlab-runner
 tags:
   GITLABRUNNER:
     - alpine-v14.2.0
+    - alpine-v13.12.0
