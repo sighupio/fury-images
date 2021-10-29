@@ -1,0 +1,4 @@
+image: sighup/gitlab-runner-helper
+tags:
+  GITLABRUNNER:
+    - x86_64-v13.12.0
