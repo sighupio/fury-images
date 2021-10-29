@@ -1,4 +1,0 @@
-image: sighup/jfrog-elasticsearch-sg
-tags:
-  ELASTICSEARCH:
-    - 7.14.1

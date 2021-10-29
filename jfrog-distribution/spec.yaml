@@ -1,4 +1,0 @@
-image: sighup/jfrog-distribution
-tags:
-  DISTRIBUTION:
-    - 2.9.2

@@ -1,4 +1,0 @@
-image: sighup/jfrog-insight-scheduler
-tags:
-  INSIGHT:
-    - 4.7.15

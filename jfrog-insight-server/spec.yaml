@@ -1,4 +1,0 @@
-image: sighup/jfrog-insight-server
-tags:
-  INSIGHT:
-    - 4.7.15

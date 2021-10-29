@@ -1,4 +1,0 @@
-image: sighup/jfrog-xray-indexer
-tags:
-  XRAY:
-    - 3.32.2

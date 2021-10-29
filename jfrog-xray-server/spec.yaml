@@ -1,4 +1,0 @@
-image: sighup/jfrog-xray-server
-tags:
-  XRAY:
-    - 3.32.2

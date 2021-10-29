@@ -1,6 +1,0 @@
-image: sighup/jfrog-router
-tags:
-  ROUTER:
-    - 7.24.1
-    - 7.25.1
-    - 7.19.8

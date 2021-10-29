@@ -1,4 +1,0 @@
-image: sighup/jfrog-mission-control
-tags:
-  MISSIONCONTROL:
-    - 4.7.15

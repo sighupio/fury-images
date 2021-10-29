@@ -1,4 +1,0 @@
-image: sighup/jfrog-xray-analysis
-tags:
-  XRAY:
-    - 3.32.2
