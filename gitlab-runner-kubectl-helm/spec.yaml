@@ -1,0 +1,8 @@
+image: sighup/gitlab-runner-kubectl-helm
+tags:
+  GITLABRUNNER:
+    - v13.12.0
+  KUBECTL:
+    - v1.20.7
+  HELM:
+    - v3.7.0
