@@ -8,6 +8,8 @@ ENV GOMAXPROCS=1
 ENV GOOS=linux
 ENV GOPRIVATE=github.com/sighupio/*
 
+RUN apk add git
+
 RUN go install golang.org/x/tools/cmd/goimports@latest && \
     go install github.com/swaggo/swag/cmd/swag@latest && \
     go install mvdan.cc/gofumpt@latest && \
