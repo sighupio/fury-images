@@ -27,7 +27,6 @@ RUN apk --update --no-cache add \
   vim \
   nano \
   make \
-  make \
   tree \
   bind-tools \
   bash-completion
