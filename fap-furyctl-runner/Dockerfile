@@ -75,15 +75,15 @@ RUN curl -L https://github.com/direnv/direnv/releases/download/${DIRENV_VERSION}
   chmod +x /usr/local/bin/direnv
 
 # Create a group and user
-RUN mkdir /demo
+RUN mkdir /furyctl
 
 # Clone repository
 
 # Add entrypoint
-ADD src/entrypoint.sh /demo/entrypoint.sh
-RUN chmod +x /demo/entrypoint.sh
+COPY src/entrypoint.sh /furyctl/entrypoint.sh
+RUN chmod +x /furyctl/entrypoint.sh
 
-WORKDIR /demo
+WORKDIR /furyctl
 
 #USER fury
 ENTRYPOINT ["/furyctl/entrypoint.sh"]
