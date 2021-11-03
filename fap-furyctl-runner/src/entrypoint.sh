@@ -34,10 +34,13 @@ fi
 # Furyctl
 # check_env_variable FURYCTL_TOKEN
 
+# SLACK NOTIFICATION TOKEN
+# check_env_variable SLACK_TOKEN
+
 # check_file /var/Furyfile.yaml
 # check_file /var/cluster.yaml
 
-# Cluster Metadata / Fury Metadata configmap 
+# Cluster Metadata / Fury Metadata configmap
 # T.B.D.
 
 # ------------------------------------------
@@ -82,6 +85,16 @@ kustomize build manifests/ingress-infra | kubectl apply -f - | grep -v unchanged
 # Push to repository again
 # ------------------------------------------
 
-# git init 
+# git init
 # git add remote robe
 # git pusha tutto
+
+# -----------------------------------------------------------------
+# SEND NOTIFICATION OF THE JOB RESULT TO SLACK/MAIL/OTHERS
+# https://api.slack.com/tutorials/tracks/posting-messages-with-curl
+# -----------------------------------------------------------------
+
+# curl -H "Content-type: application/json" \
+# --data '{"channel":"C123456","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"You cluster ${CLUSERNAME} has been created :tada:."}}]}' \
+# -H "Authorization: Bearer ${SLACK_TOKEN}" \
+# -X POST https://slack.com/api/chat.postMessage
