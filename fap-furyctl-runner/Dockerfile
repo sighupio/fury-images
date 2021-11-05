@@ -11,6 +11,8 @@ ENV FURYCTL_VERSION v0.6.1
 ENV FURYAGENT_VERSION v0.2.3
 ENV VELERO_VERSION v1.6.0
 ENV DIRENV_VERSION v2.28.0
+ENV YQ_VERSION v4.14.1
+ENV GIT_CRYPT=0.6.0
 
 RUN apk --update --no-cache add \
   bash \
@@ -29,7 +31,13 @@ RUN apk --update --no-cache add \
   make \
   tree \
   bind-tools \
-  bash-completion
+  bash-completion \
+  ansible
+
+RUN apk add g++ make openssl openssl-dev --no-cache --update && \
+    curl -L https://github.com/AGWA/git-crypt/archive/$GIT_CRYPT.tar.gz | tar zxv -C /var/tmp  && \ 
+    cd /var/tmp/git-crypt-$GIT_CRYPT && make && make install && \
+    rm -r /var/tmp/git-crypt-$GIT_CRYPT 
 
 RUN pip3 install --upgrade pip
 RUN pip3 install requests awscli==${AWSCLI_VERSION}
@@ -74,16 +82,19 @@ RUN curl -L https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VE
 RUN curl -L https://github.com/direnv/direnv/releases/download/${DIRENV_VERSION}/direnv.linux-amd64 -o /usr/local/bin/direnv && \
   chmod +x /usr/local/bin/direnv
 
+# Install yq
+RUN curl -L https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -o /usr/bin/yq && chmod +x /usr/bin/yq
+
 # Create a group and user
-RUN mkdir /furyctl
+RUN mkdir -p /workdir
 
 # Clone repository
 
 # Add entrypoint
-COPY src/entrypoint.sh /furyctl/entrypoint.sh
-RUN chmod +x /furyctl/entrypoint.sh
+COPY src/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-WORKDIR /furyctl
+WORKDIR /workdir
 
 #USER fury
-ENTRYPOINT ["/furyctl/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
