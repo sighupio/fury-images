@@ -18,7 +18,7 @@ fi
 # Check prerequisites
 # ------------------------------------------
 
-echo -n "🛫\tperforming pre-flight checks... "
+echo -n "🛫  performing pre-flight checks... "
 
 # vSphere
 check_env_variable VSPHERE_USER
@@ -62,7 +62,7 @@ git clone ${GIT_REPO_URL} ${BASE_WORKDIR}
 
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
-    echo "🔐\tunlocking the git repo"
+    echo "🔐  unlocking the git repo"
     git-crypt unlock /var/git-crypt.key
 fi
 
@@ -79,7 +79,7 @@ cd $WORKDIR
 # ------------------------------------------
 # Launch furyctl
 # ------------------------------------------
-echo "🚀\tstarting cluster creation"
+echo "🚀  starting cluster creation"
 cp /var/cluster.yml ${WORKDIR}/cluster.yml
 furyctl cluster init --reset
 furyctl cluster apply
@@ -88,7 +88,7 @@ furyctl cluster apply
 # Install Fury
 # ------------------------------------------
 
-echo "🐉\tdeploying Kubernetes Fury Distribution"
+echo "🐉  deploying Kubernetes Fury Distribution"
 
 # KUBECONFIG
 export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
@@ -109,7 +109,7 @@ sed -i s/{{INGRESS_HOSTNAME}}/${INGRESS_BASE_URL}/ manifests/ingress-infra/resou
 kustomize build manifests | kubectl apply -f -
 
 # Waiting for master node to be ready
-echo "⏱\twaiting for master node to be ready... "
+echo "⏱  waiting for master node to be ready... "
 kubectl wait --for=condition=Ready nodes/furyplatform-demo-master-1.localdomain --timeout 5m
 
 # ------------------------------------------
@@ -129,4 +129,6 @@ git push
 # --data '{"channel":"C123456","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"You cluster ${CLUSERNAME} has been created :tada:."}}]}' \
 # -H "Authorization: Bearer ${SLACK_TOKEN}" \
 # -X POST https://slack.com/api/chat.postMessage
+echo
 echo "we're done! enjoy your cluster 🎉"
+echo
