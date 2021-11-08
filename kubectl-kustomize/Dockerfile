@@ -22,5 +22,5 @@ RUN /usr/local/bin/kustomize version
 FROM alpine:3.9
 COPY --from=builder /usr/local/bin/kubectl /usr/local/bin/kubectl
 RUN kubectl version --client
-COPY --from=builder /kustomize /usr/local/bin/kustomize
+COPY --from=builder /usr/local/bin/kustomize /usr/local/bin/kustomize
 RUN kustomize version
