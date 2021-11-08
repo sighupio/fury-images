@@ -46,12 +46,6 @@ notify() {
 }
 
 export JOB_RESULT=0
-
-# We should have these 2 env vars mounted as env vars from the Fleet API
-export CLUSTER_NAME=$(yq eval .metadata.name /var/cluster.yml)
-export CLUSTER_ENVIRONMENT=$(yq eval .spec.environmentName /var/cluster.yml)
-CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
-
 BASE_WORKDIR="/workdir"
 
 
@@ -78,6 +72,8 @@ check_env_variable GIT_COMMITTER_EMAIL
 
 # Furyctl
 check_env_variable FURYCTL_TOKEN
+check_env_variable CLUSTER_NAME
+check_env_variable CLUSTER_ENVIRONMENT
 
 # Slack
 check_env_variable SLACK_TOKEN
@@ -170,8 +166,10 @@ cp -r ${BASE_WORKDIR}/presets/manifests ${WORKDIR}/manifests
 
 # Update the ingress hostname accordingly
 sed -i s/{{INGRESS_HOSTNAME}}/${INGRESS_BASE_URL}/ manifests/ingress-infra/resources/*
+
 # Update the cluster cidr in the networking patch using the info from cluster.yml
 # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
+CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
 sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/networking/patches/calico-ds.yml
 
 # deploy modules
@@ -198,7 +196,7 @@ done
 # ------------------------------------------
 
 git add ${BASE_WORKDIR}
-git commit -m "changes made by furyctl runner"
+git commit -m "Create cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 git push
 if [ $? -ne 0 ]; then
     JOB_RESULT=1

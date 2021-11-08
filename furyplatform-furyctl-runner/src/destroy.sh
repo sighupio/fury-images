@@ -31,7 +31,7 @@ notify() {
     if [[ "${JOB_RESULT}" = 0 ]] ; then
         message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} has been destroyed :skull: \"}}]}"
     else
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} creation has failed :flushed:\"}}]}"
+        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} destruction has failed :flushed:\"}}]}"
     fi
 
     echo "📬  sending Slack notification... "
@@ -47,13 +47,7 @@ notify() {
 
 export JOB_RESULT=0
 
-# We should have these 2 env vars mounted as env vars from the Fleet API
-export CLUSTER_NAME=$(yq eval .metadata.name /var/cluster.yml)
-export CLUSTER_ENVIRONMENT=$(yq eval .spec.environmentName /var/cluster.yml)
-CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
-
 BASE_WORKDIR="/workdir"
-
 
 # ------------------------------------------
 # Check prerequisites
@@ -78,6 +72,8 @@ check_env_variable GIT_COMMITTER_EMAIL
 
 # Furyctl
 check_env_variable FURYCTL_TOKEN
+check_env_variable CLUSTER_NAME
+check_env_variable CLUSTER_ENVIRONMENT
 
 # Slack
 check_env_variable SLACK_TOKEN
@@ -141,7 +137,7 @@ fi
 
 cd ${BASE_WORKDIR}
 git rm -r ${WORKDIR}
-git commit -m "Destroying cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
+git commit -m "Destroy cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 git push
 if [ $? -ne 0 ]; then
     JOB_RESULT=1
