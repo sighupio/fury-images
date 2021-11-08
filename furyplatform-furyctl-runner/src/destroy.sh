@@ -137,7 +137,7 @@ fi
 
 cd ${BASE_WORKDIR}
 git rm -r ${WORKDIR}
-git commit -m "Destroy cluster **${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}**"
+git commit -m "Destroy cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 git push
 if [ $? -ne 0 ]; then
     JOB_RESULT=1

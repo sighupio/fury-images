@@ -1,4 +1,5 @@
 image: sighup/furyplatform-furyctl-runner
 tags:
+
   VERSION:
     - 0.0.4
