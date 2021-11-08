@@ -171,7 +171,8 @@ cp -r ${BASE_WORKDIR}/presets/manifests ${WORKDIR}/manifests
 # Update the ingress hostname accordingly
 sed -i s/{{INGRESS_HOSTNAME}}/${INGRESS_BASE_URL}/ manifests/ingress-infra/resources/*
 # Update the cluster cidr in the networking patch using the info from cluster.yml
-sed -i s/{{CALICO_IPV4POOL_CIDR}}/${CLUSTER_POD_CIDR}/ manifests/networking/patches/calico-ds.yml
+# We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
+sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/networking/patches/calico-ds.yml
 
 # deploy modules
 kustomize build manifests | kubectl apply -f -
