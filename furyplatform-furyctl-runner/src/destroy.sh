@@ -29,9 +29,9 @@ fi
 notify() {
     # JOB_RESULT is the exit codes of all commands, if one of them != 0, then we failed
     if [[ "${JOB_RESULT}" = 0 ]] ; then
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} has been destroyed :skull: \"}}]}"
+        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster **${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}** has been destroyed :skull: \"}}]}"
     else
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} destruction has failed :flushed:\"}}]}"
+        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster **${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}** destruction has failed :flushed:\"}}]}"
     fi
 
     echo "📬  sending Slack notification... "
@@ -85,7 +85,7 @@ echo "OK."
 
 echo "📬  sending Slack notification... "
 curl -H "Content-type: application/json" \
---data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting deletion of cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT} :hammer_and_wrench:\"}}]}" \
+--data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting destruction of cluster **${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}** 💣 \"}}]}" \
 -H "Authorization: Bearer ${SLACK_TOKEN}" \
 --output /dev/null -s \
 -X POST https://slack.com/api/chat.postMessage
@@ -137,7 +137,7 @@ fi
 
 cd ${BASE_WORKDIR}
 git rm -r ${WORKDIR}
-git commit -m "Destroy cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
+git commit -m "Destroy cluster **${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}**"
 git push
 if [ $? -ne 0 ]; then
     JOB_RESULT=1
