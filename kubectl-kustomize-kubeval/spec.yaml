@@ -1,0 +1,11 @@
+image: sighup/kubectl-kustomize-kubeval
+tags:
+  KUBECTL:
+    - 1.18.2
+    - 1.20.12
+    - 1.21.6
+  KUSTOMIZE:
+    - 3.8.7
+    - 3.9.1
+  KUBEVAL:
+    - v0.16.1
