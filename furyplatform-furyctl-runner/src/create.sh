@@ -195,6 +195,7 @@ done
 # Push to repository our changes
 # ------------------------------------------
 
+git pull --rebase --autostash
 git add ${BASE_WORKDIR}
 git commit -m "Create cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 git push

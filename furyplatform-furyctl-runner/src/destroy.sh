@@ -136,6 +136,7 @@ fi
 # ------------------------------------------
 
 cd ${BASE_WORKDIR}
+git pull --rebase --autostash
 git rm -r ${WORKDIR}
 git commit -m "Destroy cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 git push
