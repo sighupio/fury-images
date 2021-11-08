@@ -90,11 +90,18 @@ RUN mkdir -p /workdir
 
 # Clone repository
 
-# Add entrypoint
-COPY src/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Add create command
+COPY src/create.sh /create.sh
+RUN chmod +x /create.sh
+
+# Add destroy command
+COPY src/destroy.sh /destroy.sh
+RUN chmod +x /destroy.sh
 
 WORKDIR /workdir
 
-#USER fury
-ENTRYPOINT ["/entrypoint.sh"]
+# Create cluster
+ENTRYPOINT ["/create.sh"]
+
+# To delete cluster use:
+# ENTRYPOINT ["/destroy.sh"] 
