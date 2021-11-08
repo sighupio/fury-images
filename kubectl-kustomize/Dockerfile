@@ -1,6 +1,6 @@
 FROM ubuntu:latest as builder
 
-RUN apt-get update && apt-get install curl wget -y
+RUN apt-get update && apt-get install curl wget git -y
 
 ARG KUBECTL
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
