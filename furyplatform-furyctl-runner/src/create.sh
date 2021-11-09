@@ -29,9 +29,9 @@ fi
 notify() {
     # JOB_RESULT is the exit codes of all commands, if one of them != 0, then we failed
     if [[ "${JOB_RESULT}" = 0 ]] ; then
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}* has been created :tada:\"}}]}"
+        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
     else
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}* creation has failed :flushed:\"}}]}"
+        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
     fi
 
     echo "📬  sending Slack notification... "
@@ -44,10 +44,6 @@ notify() {
 
     exit ${JOB_RESULT}
 }
-
-export JOB_RESULT=0
-BASE_WORKDIR="/workdir"
-
 
 # ------------------------------------------
 # Check prerequisites
@@ -90,11 +86,18 @@ check_file /var/cluster.yml
 
 echo "OK."
 
+# Auxiliary ENV VARS
+JOB_RESULT=0
+BASE_WORKDIR="/workdir"
+CLUSTER_FULL_NAME=${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}
+WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}"
+
+
 # Let's start!
 
 echo "📬  sending Slack notification... "
 curl -H "Content-type: application/json" \
---data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}* :hammer_and_wrench:\"}}]}" \
+--data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}" \
 -H "Authorization: Bearer ${SLACK_TOKEN}" \
 --output /dev/null -s \
 -X POST https://slack.com/api/chat.postMessage
@@ -120,9 +123,7 @@ if [[ -f "/var/git-crypt.key" ]]; then
 
 fi
 
-WORKDIR="${BASE_WORKDIR}/${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
 mkdir -p $WORKDIR
-
 echo "switching to workdir: ${WORKDIR}"
 cd $WORKDIR
 
@@ -161,28 +162,23 @@ if [ $? -ne 0 ]; then
     notify
 fi
 
-# Apply Patches ??
-cp -r ${BASE_WORKDIR}/presets/manifests ${WORKDIR}/manifests
+# Copy presets ("manifests templates") to cluster folder
+cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
 
 # Update the ingress hostname accordingly
-sed -i s/{{INGRESS_HOSTNAME}}/${INGRESS_BASE_URL}/ manifests/ingress-infra/resources/*
+grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/${INGRESS_BASE_URL}/
 
 # Update the cluster cidr in the networking patch using the info from cluster.yml
 # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
 CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
-sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/networking/patches/calico-ds.yml
+sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
 
 # deploy modules
-kustomize build manifests | kubectl apply -f -
+kustomize build manifests/modules | kubectl apply -f -
 
 # Waiting for master node to be ready
 echo "⏱  waiting for master node to be ready... "
-kubectl wait --for=condition=Ready nodes/furyplatform-demo-master-1.localdomain --timeout 5m
-
-# Restart vmtoolsd in all VMs to workaround DNS name not being detected 🤞🏻
-# pushd cluster/provision
-# ansible-playbook ${BASE_WORKDIR}/presets/restart-vmtoolsd.yml
-# popd
+kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
 
 # TODO: FIXME this is a workaround because we have a random issue on vSphere that sometimes doesn't finds the nodes
 for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}');do
@@ -192,12 +188,17 @@ done
 
 
 # ------------------------------------------
+# Deploy Cluster Metadata and Fury Metadata
+# ------------------------------------------
+kustomize build manifests/fip | kubectl apply -f -
+
+# ------------------------------------------
 # Push to repository our changes
 # ------------------------------------------
 
 git pull --rebase --autostash
 git add ${BASE_WORKDIR}
-git commit -m "Create cluster ${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}"
+git commit -m "Create cluster ${CLUSTER_FULL_NAME}"
 git push
 if [ $? -ne 0 ]; then
     JOB_RESULT=1
