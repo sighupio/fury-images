@@ -1,8 +1,6 @@
 image: sighup/e2e-testing
 tags:
   KUBECTL:
-    - 1.18.19
-    - 1.19.11
     - 1.20.7
     - 1.21.1
     - 1.22.0
@@ -14,7 +12,6 @@ tags:
   ISTIOCTL:
     - 1.9.4
   FURYCTL:
-    - 0.6.1
     - 0.2.2
   KUSTOMIZE:
     - 3.8.7
