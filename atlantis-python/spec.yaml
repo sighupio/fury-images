@@ -1,0 +1,4 @@
+image: sighup/atlantis-python
+tags:
+  ATLANTIS:
+    - v0.17.5
