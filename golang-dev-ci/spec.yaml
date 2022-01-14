@@ -1,4 +1,0 @@
-image: sighup/golang-dev-ci
-tags:
-  GOLANG_VERSION:
-    - 1.17
