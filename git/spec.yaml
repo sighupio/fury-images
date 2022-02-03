@@ -2,5 +2,4 @@ image: sighup/git
 tags:
   GIT_VERSION:
     - 2
-    - 2.35
     - 2.35.1
