@@ -6,20 +6,20 @@ set -o nounset
 
 check_env_variable() {
     if [[ -z ${!1+set} ]]; then
-       echo "Error: Define $1 environment variable"
-       JOB_RESULT=1
-       notify
-       exit 1
+        echo "Error: Define $1 environment variable"
+        JOB_RESULT=1
+        notify
+        exit 1
     fi
 }
 
 check_file() {
-if ! test -f "$1"; then
-    echo "Error: $1 does not exist."
-    JOB_RESULT=1
-    notify
-    exit 1
-fi
+    if ! test -f "$1"; then
+        echo "Error: $1 does not exist."
+        JOB_RESULT=1
+        notify
+        exit 1
+    fi
 }
 
 # -----------------------------------------------------------------
@@ -33,15 +33,15 @@ notify() {
     else
         message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
     fi
-
+    
     echo "📬  sending Slack notification... "
-
+    
     curl -H "Content-type: application/json" \
     --data  "${message}" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
     --output /dev/null -s \
     -X POST https://slack.com/api/chat.postMessage
-
+    
     exit ${JOB_RESULT}
 }
 
@@ -51,17 +51,32 @@ notify() {
 
 echo -n "🛫  performing pre-flight checks... "
 
-# vSphere
-check_env_variable VSPHERE_USER
-check_env_variable VSPHERE_PASSWORD
-check_env_variable VSPHERE_SERVER
+case $PROVIDER_NAME in
+    "vsphere")
+        # vSphere
+        check_env_variable VSPHERE_USER
+        check_env_variable VSPHERE_PASSWORD
+        check_env_variable VSPHERE_SERVER
+    ;;
+    "aws")
+        # AWS
+        check_env_variable AWS_ACCESS_KEY_ID
+        check_env_variable AWS_SECRET_ACCESS_KEY
+        check_env_variable AWS_S3_BUCKET
+    ;;
+    "gcp")
+        # GCP
+        check_env_variable GOOGLE_CREDENTIALS
+    ;;
+    *)
+        # ERROR
+        echo "Provider $PROVIDER_NAME not supported"
+        JOB_RESULT=1
+        notify
+        exit 1
+esac
 
-# AWS 
-# check_env_variable AWS_ACCESS_KEY_ID
-# check_env_variable AWS_SECRET_ACCESS_KEY
-# check_env_variable AWS_S3_BUCKET
-
-# GIT Repository 
+# GIT Repository
 check_env_variable GIT_REPO_URL
 check_env_variable GIT_COMMITTER_NAME
 check_env_variable GIT_COMMITTER_EMAIL
@@ -120,7 +135,7 @@ if [[ -f "/var/git-crypt.key" ]]; then
     if [ $? -ne 0 ]; then
         JOB_RESULT=1
     fi
-
+    
 fi
 
 mkdir -p $WORKDIR
