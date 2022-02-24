@@ -3,3 +3,4 @@ tags:
   GOLANG_VERSION:
     - 1.17.6
     - 1.17
+    - 1.18rc1
