@@ -12,6 +12,7 @@ ARG GOFUMPT_VERSION=v0.2.1
 ARG GOIMPORTS_VERSION=v0.1.8
 ARG GOLANGCILINT_VERSION=v1.43.0
 ARG MAGE_VERSION=v1.12.1
+ARG GOMIGRATE_VERSION=v4.15.1
 
 ENV CGO_ENABLED=0
 ENV GOARCH=${GOARCH}
@@ -28,4 +29,5 @@ RUN go install github.com/go-delve/delve/cmd/dlv@${DLV_VERSION} && \
     go install github.com/roblaszczak/go-cleanarch@${GOCLEANARCH_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     go install mvdan.cc/gofumpt@${GOFUMPT_VERSION} && \
-    go install github.com/magefile/mage@${MAGE_VERSION}
+    go install github.com/magefile/mage@${MAGE_VERSION} && \
+    go install github.com/golang-migrate/migrate/v4@${GOMIGRATE_VERSION}
