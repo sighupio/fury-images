@@ -30,4 +30,4 @@ RUN go install github.com/go-delve/delve/cmd/dlv@${DLV_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     go install mvdan.cc/gofumpt@${GOFUMPT_VERSION} && \
     go install github.com/magefile/mage@${MAGE_VERSION} && \
-    go install github.com/golang-migrate/migrate/v4@${GOMIGRATE_VERSION}
+    go install github.com/golang-migrate/migrate@${GOMIGRATE_VERSION}
