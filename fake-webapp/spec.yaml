@@ -1,0 +1,4 @@
+image: sighup/fake-webapp
+tags:
+  VERSION:
+    - 0.1
