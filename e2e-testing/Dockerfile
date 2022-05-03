@@ -10,7 +10,7 @@ ARG BATS
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get upgrade -yq && apt-get dist-upgrade -yq && apt-get autoclean -yq && \
+RUN apt-get update && apt-get upgrade -yq && apt-get autoclean -yq && \
     apt-get autoremove -yq
 
 RUN apt-get install -yq make git curl ca-certificates npm jq
