@@ -25,7 +25,7 @@ RUN curl -LOs https://get.helm.sh/helm-v${HELM}-linux-amd64.tar.gz && \
     mv linux-amd64/helm /usr/local/bin/helm && \
     rm -rf linux-amd64/
 
-RUN curl -LOs https://github.com/mikefarah/yq/releases/download/${YQ}/yq_linux_amd64 && \
+RUN curl -LOs https://github.com/mikefarah/yq/releases/download/v${YQ}/yq_linux_amd64 && \
     chmod +x yq_linux_amd64 && \
     mv yq_linux_amd64 /usr/local/bin/yq
 
@@ -45,7 +45,7 @@ RUN curl -LOs https://github.com/kubernetes-sigs/kustomize/releases/download/kus
 
 RUN make --version && \
     kubectl version --client && \
-    helm version --client && \
+    helm version && \
     jq --version && \
     yq --version && \
     istioctl version --remote=false && \
