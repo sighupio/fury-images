@@ -9,6 +9,7 @@ tags:
     - 2.16.1
   YQ:
     - 2.4.1
+    - 4.21.1
   ISTIOCTL:
     - 1.9.4
   FURYCTL:
