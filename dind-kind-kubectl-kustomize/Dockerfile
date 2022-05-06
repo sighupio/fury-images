@@ -4,7 +4,7 @@ ARG KIND_VERSION=0.12.0
 ARG KUBECTL_VERSION=1.23.0
 ARG KUSTOMIZE_VERSION=3.10.0
 
-FROM docker:${DOCKER_VERSION}-dind-alpine${ALPINE_VERSION}}
+FROM docker:${DOCKER_VERSION}-dind-alpine${ALPINE_VERSION}
 
 RUN apk add bash curl git jq make util-linux \
     wget -qO /usr/local/bin/kind "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-$(uname)-amd64" \
