@@ -1,0 +1,8 @@
+image: sighup/dind-kind-kubectl-kustomize
+tags:
+  KIND_VERSION:
+    - 0.14.0
+  KUBECTL_VERSION:
+    - 1.23.0
+  KUSTOMIZE_VERSION:
+    - 3.10.0
