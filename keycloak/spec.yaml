@@ -1,0 +1,6 @@
+image: sighup/keycloak-metrics-spi
+tags:
+  KEYCLOAK:
+    - 18.0.0
+  KEYCLOAK_METRICS_SPI:
+    - 2.5.3
