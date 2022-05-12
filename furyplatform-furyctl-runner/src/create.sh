@@ -33,15 +33,15 @@ notify() {
     else
         message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
     fi
-    
+
     echo "📬  sending Slack notification... "
-    
+
     curl -H "Content-type: application/json" \
     --data  "${message}" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
     --output /dev/null -s \
     -X POST https://slack.com/api/chat.postMessage
-    
+
     exit ${JOB_RESULT}
 }
 
@@ -131,11 +131,12 @@ fi
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
     echo "🔐  unlocking the git repo"
-    git-crypt unlock /var/git-crypt.key
+    cat /var/git-crypt.key  | base64 -d > /tmp/git-crypt.key
+    git-crypt unlock /tmp/git-crypt.key
     if [ $? -ne 0 ]; then
         JOB_RESULT=1
     fi
-    
+
 fi
 
 mkdir -p $WORKDIR
