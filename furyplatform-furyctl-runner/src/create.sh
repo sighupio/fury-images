@@ -155,10 +155,14 @@ if [ $? -ne 0 ]; then
     notify
 fi
 
+# sometimes in Vsphere the apply failing with apparently no reason, and re-launching it, it ends successfully
 furyctl cluster apply
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    notify
+    furyctl cluster apply
+    if [ $? -ne 0 ]; then
+        JOB_RESULT=1
+        notify
+    fi
 fi
 
 # ------------------------------------------
