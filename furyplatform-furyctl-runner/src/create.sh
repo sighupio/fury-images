@@ -212,6 +212,11 @@ kustomize build manifests/fip | kubectl apply -f -
 # Push to repository our changes
 # ------------------------------------------
 
+
+#This mitigate the error of git because the GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit message
+GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
+GIT_AUTHOR_EMAIL=${GIT_COMMITTER_EMAIL}
+
 git pull --rebase --autostash
 git add ${BASE_WORKDIR}
 git commit -m "Create cluster ${CLUSTER_FULL_NAME}"
