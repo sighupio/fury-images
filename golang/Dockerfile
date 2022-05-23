@@ -13,7 +13,7 @@ ARG GOIMPORTS_VERSION=v0.1.10
 ARG GOLANGCILINT_VERSION=v1.45.2
 ARG MAGE_VERSION=v1.13.0
 ARG GOMIGRATE_VERSION=v4.15.2
-
+ARG GOTESTSUM_VERSION=v1.8.1
 ENV CGO_ENABLED=0
 ENV GOARCH=${GOARCH}
 ENV GOOS=linux
@@ -29,4 +29,5 @@ RUN go install github.com/go-delve/delve/cmd/dlv@${DLV_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     go install mvdan.cc/gofumpt@${GOFUMPT_VERSION} && \
     go install github.com/magefile/mage@${MAGE_VERSION} && \
-    go install -tags 'mongodb' github.com/golang-migrate/migrate/v4/cmd/migrate@${GOMIGRATE_VERSION}
+    go install -tags 'mongodb' github.com/golang-migrate/migrate/v4/cmd/migrate@${GOMIGRATE_VERSION} && \
+    go install gotest.tools/gotestsum@${GOTESTSUM_VERSION}
