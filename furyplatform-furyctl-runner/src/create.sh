@@ -155,10 +155,14 @@ if [ $? -ne 0 ]; then
     notify
 fi
 
+# sometimes in Vsphere the apply failing with apparently no reason, and re-launching it, it ends successfully
 furyctl cluster apply
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    notify
+    furyctl cluster apply
+    if [ $? -ne 0 ]; then
+        JOB_RESULT=1
+        notify
+    fi
 fi
 
 # ------------------------------------------
@@ -211,6 +215,11 @@ kustomize build manifests/fip | kubectl apply -f -
 # ------------------------------------------
 # Push to repository our changes
 # ------------------------------------------
+
+
+#This mitigate the error of git because the GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit message
+GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
+GIT_AUTHOR_EMAIL=${GIT_COMMITTER_EMAIL}
 
 git pull --rebase --autostash
 git add ${BASE_WORKDIR}
