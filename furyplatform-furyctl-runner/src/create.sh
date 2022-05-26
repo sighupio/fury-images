@@ -5,21 +5,21 @@ set -o nounset
 # set -e
 
 check_env_variable() {
-    if [[ -z ${!1+set} ]]; then
-        echo "Error: Define $1 environment variable"
-        JOB_RESULT=1
-        notify
-        exit 1
-    fi
+  if [[ -z ${!1+set} ]]; then
+    echo "Error: Define $1 environment variable"
+    JOB_RESULT=1
+    notify
+    exit 1
+  fi
 }
 
 check_file() {
-    if ! test -f "$1"; then
-        echo "Error: $1 does not exist."
-        JOB_RESULT=1
-        notify
-        exit 1
-    fi
+  if ! test -f "$1"; then
+    echo "Error: $1 does not exist."
+    JOB_RESULT=1
+    notify
+    exit 1
+  fi
 }
 
 # -----------------------------------------------------------------
@@ -27,22 +27,22 @@ check_file() {
 # https://api.slack.com/tutorials/tracks/posting-messages-with-curl
 # -----------------------------------------------------------------
 notify() {
-    # JOB_RESULT is the exit codes of all commands, if one of them != 0, then we failed
-    if [[ "${JOB_RESULT}" = 0 ]] ; then
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
-    else
-        message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
-    fi
+  # JOB_RESULT is the exit codes of all commands, if one of them != 0, then we failed
+  if [[ "${JOB_RESULT}" = 0 ]]; then
+    message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
+  else
+    message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
+  fi
 
-    echo "📬  sending Slack notification... "
+  echo "📬  sending Slack notification... "
 
-    curl -H "Content-type: application/json" \
-    --data  "${message}" \
+  curl -H "Content-type: application/json" \
+    --data "${message}" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
     --output /dev/null -s \
     -X POST https://slack.com/api/chat.postMessage
 
-    exit ${JOB_RESULT}
+  exit ${JOB_RESULT}
 }
 
 # ------------------------------------------
@@ -52,29 +52,33 @@ notify() {
 echo -n "🛫  performing pre-flight checks... "
 
 case $PROVIDER_NAME in
-    "vsphere")
-        # vSphere
-        check_env_variable VSPHERE_USER
-        check_env_variable VSPHERE_PASSWORD
-        check_env_variable VSPHERE_SERVER
-    ;;
-    "aws")
-        # AWS
-        check_env_variable AWS_ACCESS_KEY_ID
-        check_env_variable AWS_SECRET_ACCESS_KEY
-        check_env_variable AWS_S3_BUCKET
-    ;;
-    "gcp")
-        # GCP
-        check_env_variable GOOGLE_CREDENTIALS
-    ;;
-    *)
-        # ERROR
-        echo "Provider $PROVIDER_NAME not supported"
-        JOB_RESULT=1
-        notify
-        exit 1
+"vsphere")
+  # vSphere
+  check_env_variable VSPHERE_USER
+  check_env_variable VSPHERE_PASSWORD
+  check_env_variable VSPHERE_SERVER
+  ;;
+"aws")
+  # AWS
+  check_env_variable AWS_ACCESS_KEY_ID
+  check_env_variable AWS_SECRET_ACCESS_KEY
+  check_env_variable AWS_S3_BUCKET
+  ;;
+"gcp")
+  # GCP
+  check_env_variable GOOGLE_CREDENTIALS
+  ;;
+*)
+  # ERROR
+  echo "Provider $PROVIDER_NAME not supported"
+  JOB_RESULT=1
+  notify
+  exit 1
+  ;;
 esac
+
+# KFD Karrier Module
+check_env_variable KARRIER_MODULE_VERSION
 
 # GIT Repository
 check_env_variable GIT_REPO_URL
@@ -107,15 +111,14 @@ BASE_WORKDIR="/workdir"
 CLUSTER_FULL_NAME=${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}
 WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}"
 
-
 # Let's start!
 
 echo "📬  sending Slack notification... "
 curl -H "Content-type: application/json" \
---data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}" \
--H "Authorization: Bearer ${SLACK_TOKEN}" \
---output /dev/null -s \
--X POST https://slack.com/api/chat.postMessage
+  --data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}" \
+  -H "Authorization: Bearer ${SLACK_TOKEN}" \
+  --output /dev/null -s \
+  -X POST https://slack.com/api/chat.postMessage
 
 # -------------------------------------------------------------------------
 # Clone the repo where we'll put all the stuff and cd into it
@@ -123,19 +126,19 @@ curl -H "Content-type: application/json" \
 
 git clone ${GIT_REPO_URL} ${BASE_WORKDIR}
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    # If the git clone fails we can't move on. Let's notify & exit.
-    notify
+  JOB_RESULT=1
+  # If the git clone fails we can't move on. Let's notify & exit.
+  notify
 fi
 
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
-    echo "🔐  unlocking the git repo"
-    cat /var/git-crypt.key  | base64 -d > /tmp/git-crypt.key
-    git-crypt unlock /tmp/git-crypt.key
-    if [ $? -ne 0 ]; then
-        JOB_RESULT=1
-    fi
+  echo "🔐  unlocking the git repo"
+  cat /var/git-crypt.key | base64 -d >/tmp/git-crypt.key
+  git-crypt unlock /tmp/git-crypt.key
+  if [ $? -ne 0 ]; then
+    JOB_RESULT=1
+  fi
 
 fi
 
@@ -151,18 +154,18 @@ cp /var/cluster.yml ${WORKDIR}/cluster.yml
 
 furyctl cluster init --reset
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    notify
+  JOB_RESULT=1
+  notify
 fi
 
 # sometimes in Vsphere the apply failing with apparently no reason, and re-launching it, it ends successfully
 furyctl cluster apply
 if [ $? -ne 0 ]; then
-    furyctl cluster apply
-    if [ $? -ne 0 ]; then
-        JOB_RESULT=1
-        notify
-    fi
+  furyctl cluster apply
+  if [ $? -ne 0 ]; then
+    JOB_RESULT=1
+    notify
+  fi
 fi
 
 # ------------------------------------------
@@ -178,8 +181,8 @@ cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 # Download Fury modules
 furyctl vendor -H
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    notify
+  JOB_RESULT=1
+  notify
 fi
 
 # Copy presets ("manifests templates") to cluster folder
@@ -201,21 +204,21 @@ echo "⏱  waiting for master node to be ready... "
 kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
 
 # TODO: FIXME this is a workaround because we have a random issue on vSphere that sometimes doesn't finds the nodes
-for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}');do
-    # echo "forcing untaint of node $node"
-    kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
+for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}'); do
+  # echo "forcing untaint of node $node"
+  kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
 done
-
 
 # ------------------------------------------
 # Deploy Cluster Metadata and Fury Metadata
 # ------------------------------------------
-kustomize build manifests/fip | kubectl apply -f -
+target="https://github.com/sighupio/fury-karrier-module/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
+
+kustomize build ${target} | kubectl apply -f -
 
 # ------------------------------------------
 # Push to repository our changes
 # ------------------------------------------
-
 
 #This mitigate the error of git because the GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit message
 GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
@@ -226,7 +229,7 @@ git add ${BASE_WORKDIR}
 git commit -m "Create cluster ${CLUSTER_FULL_NAME}"
 git push
 if [ $? -ne 0 ]; then
-    JOB_RESULT=1
+  JOB_RESULT=1
 fi
 
 # FINISH
