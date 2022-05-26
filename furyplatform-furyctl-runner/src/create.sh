@@ -212,7 +212,7 @@ done
 # ------------------------------------------
 # Deploy Cluster Metadata and Fury Metadata
 # ------------------------------------------
-target="https://github.com/sighupio/fury-karrier-module/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
+target="https://github.com/sighupio/fury-kubernetes-karrier/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
 
 kustomize build ${target} | kubectl apply -f -
 
