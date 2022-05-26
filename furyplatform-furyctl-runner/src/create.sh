@@ -212,6 +212,9 @@ done
 # ------------------------------------------
 # Deploy Cluster Metadata and Fury Metadata
 # ------------------------------------------
+
+# TODO: when we will have the module with tags, we will substitute this deploy enriching the existing Furyfile
+#  with the module version
 target="https://github.com/sighupio/fury-kubernetes-karrier/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
 
 kustomize build ${target} | kubectl apply -f -
