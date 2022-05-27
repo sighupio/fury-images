@@ -150,16 +150,6 @@ mkdir -p ${WORKDIR}
 echo "switching to workdir: ${WORKDIR}"
 cd ${WORKDIR}
 
-# Create terraform and ansible log files, and stream their output
-
-mkdir -p ${WORKDIR}/cluster/logs
-
-touch ${WORKDIR}/cluster/logs/terraform.log
-touch ${WORKDIR}/cluster/logs/ansible.log
-
-tail -f ${WORKDIR}/cluster/logs/terraform.log &
-tail -f ${WORKDIR}/cluster/logs/ansible.log &
-
 # ------------------------------------------
 # Launch furyctl
 # ------------------------------------------
@@ -171,6 +161,16 @@ if [ $? -ne 0 ]; then
   JOB_RESULT=1
   notify
 fi
+
+# Create terraform and ansible log files, and stream their output
+
+mkdir -p ${WORKDIR}/cluster/logs
+
+touch ${WORKDIR}/cluster/logs/terraform.logs
+touch ${WORKDIR}/cluster/logs/ansible.log
+
+tail -f ${WORKDIR}/cluster/logs/terraform.logs &
+tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
 # sometimes in Vsphere the apply failing with apparently no reason, and re-launching it, it ends successfully
 furyctl cluster apply
