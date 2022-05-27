@@ -152,6 +152,8 @@ cd ${WORKDIR}
 
 # Create terraform and ansible log files, and stream their output
 
+mkdir -p ${WORKDIR}/cluster/logs
+
 touch ${WORKDIR}/cluster/logs/terraform.log
 touch ${WORKDIR}/cluster/logs/ansible.log
 
