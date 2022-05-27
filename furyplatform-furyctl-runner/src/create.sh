@@ -1,8 +1,9 @@
 #!/bin/bash
 
+set -a
+set -e
+set -o pipefail
 set -u
-set -o nounset
-# set -e
 
 check_env_variable() {
   if [[ -z ${!1+set} ]]; then
@@ -120,6 +121,9 @@ curl -H "Content-type: application/json" \
   --output /dev/null -s \
   -X POST https://slack.com/api/chat.postMessage
 
+# Create .netrc file to make authenticated git requests
+echo "machine github.com login ${CLUSTER_ENVIRONMENT} password ${FURYCTL_TOKEN}" > ~/.netrc
+
 # -------------------------------------------------------------------------
 # Clone the repo where we'll put all the stuff and cd into it
 # -------------------------------------------------------------------------
@@ -223,7 +227,7 @@ kustomize build ${target} | kubectl apply -f -
 # Push to repository our changes
 # ------------------------------------------
 
-#This mitigate the error of git because the GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit message
+# Mitigate the git commit error since GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit command
 GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
 GIT_AUTHOR_EMAIL=${GIT_COMMITTER_EMAIL}
 
