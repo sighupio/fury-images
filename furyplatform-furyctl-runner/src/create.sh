@@ -24,27 +24,34 @@ check_file() {
 }
 
 # -----------------------------------------------------------------
-# SEND NOTIFICATION OF THE JOB RESULT TO SLACK/MAIL/OTHERS
+# SEND NOTIFICATION TO SLACK/MAIL/OTHERS
 # https://api.slack.com/tutorials/tracks/posting-messages-with-curl
 # -----------------------------------------------------------------
 notify() {
-  # JOB_RESULT is the exit codes of all commands, if one of them != 0, then we failed
-  if [[ "${JOB_RESULT}" = 0 ]]; then
-    message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
-  else
-    message="{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
-  fi
-
   echo "📬  sending Slack notification... "
 
   curl -H "Content-type: application/json" \
-    --data "${message}" \
+    --data "$1" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
     --output /dev/null -s \
     -X POST https://slack.com/api/chat.postMessage
-
-  exit ${JOB_RESULT}
 }
+
+notify_error() {
+  if [ $? -ne 0 ]; then
+    notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
+  fi
+}
+
+notify_start() {
+  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}"
+}
+
+notify_finish() {
+  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
+}
+
+trap notify_error EXIT
 
 # ------------------------------------------
 # Check prerequisites
@@ -114,12 +121,7 @@ WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}"
 
 # Let's start!
 
-echo "📬  sending Slack notification... "
-curl -H "Content-type: application/json" \
-  --data "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}" \
-  -H "Authorization: Bearer ${SLACK_TOKEN}" \
-  --output /dev/null -s \
-  -X POST https://slack.com/api/chat.postMessage
+notify_start
 
 # Create .netrc file to make authenticated git requests
 echo "machine github.com login ${CLUSTER_ENVIRONMENT} password ${FURYCTL_TOKEN}" > ~/.netrc
@@ -129,21 +131,12 @@ echo "machine github.com login ${CLUSTER_ENVIRONMENT} password ${FURYCTL_TOKEN}"
 # -------------------------------------------------------------------------
 
 git clone ${GIT_REPO_URL} ${BASE_WORKDIR}
-if [ $? -ne 0 ]; then
-  JOB_RESULT=1
-  # If the git clone fails we can't move on. Let's notify & exit.
-  notify
-fi
 
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
   echo "🔐  unlocking the git repo"
   cat /var/git-crypt.key | base64 -d >/tmp/git-crypt.key
   git-crypt unlock /tmp/git-crypt.key
-  if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-  fi
-
 fi
 
 mkdir -p ${WORKDIR}
@@ -157,10 +150,6 @@ echo "🚀  starting cluster creation"
 cp /var/cluster.yml ${WORKDIR}/cluster.yml
 
 furyctl cluster init --reset
-if [ $? -ne 0 ]; then
-  JOB_RESULT=1
-  notify
-fi
 
 # Create terraform and ansible log files, and stream their output
 
@@ -172,14 +161,16 @@ touch ${WORKDIR}/cluster/logs/ansible.log
 tail -f ${WORKDIR}/cluster/logs/terraform.logs &
 tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
-# sometimes in Vsphere the apply failing with apparently no reason, and re-launching it, it ends successfully
-furyctl cluster apply
-if [ $? -ne 0 ]; then
-  furyctl cluster apply
-  if [ $? -ne 0 ]; then
-    JOB_RESULT=1
-    notify
-  fi
+# sometimes in vSphere the apply failing with apparently no reason, and re-launching it, it ends successfully
+FURYCTL_RETRY=1
+FURYCTL_MAX_RETRIES=3
+while furyctl cluster apply; JOB_RESULT=$?; [ ${FURYCTL_RETRY} -lt ${FURYCTL_MAX_RETRIES} ] && [ ${JOB_RESULT} -ne 0 ]; do
+  sleep $(( ${FURYCTL_RETRY} * 10 ))
+  FURYCTL_RETRY=$(( ${FURYCTL_RETRY} + 1 ))
+done
+
+if [ ${JOB_RESULT} -ne 0 ]; then
+  notify
 fi
 
 # ------------------------------------------
@@ -194,10 +185,6 @@ export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
 cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 # Download Fury modules
 furyctl vendor -H
-if [ $? -ne 0 ]; then
-  JOB_RESULT=1
-  notify
-fi
 
 # Copy presets ("manifests templates") to cluster folder
 cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
@@ -250,9 +237,6 @@ git pull --rebase --autostash
 git add ${BASE_WORKDIR}
 git commit -m "Create cluster ${CLUSTER_FULL_NAME}"
 git push
-if [ $? -ne 0 ]; then
-  JOB_RESULT=1
-fi
 
 # FINISH
 
@@ -260,4 +244,4 @@ echo
 echo "we're done! enjoy your cluster 🎉"
 echo
 
-notify
+notify_finish
