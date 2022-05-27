@@ -146,9 +146,17 @@ if [[ -f "/var/git-crypt.key" ]]; then
 
 fi
 
-mkdir -p $WORKDIR
+mkdir -p ${WORKDIR}
 echo "switching to workdir: ${WORKDIR}"
-cd $WORKDIR
+cd ${WORKDIR}
+
+# Create terraform and ansible log files, and stream their output
+
+touch ${WORKDIR}/cluster/logs/terraform.log
+touch ${WORKDIR}/cluster/logs/ansible.log
+
+tail -f ${WORKDIR}/cluster/logs/terraform.log &
+tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
 # ------------------------------------------
 # Launch furyctl
