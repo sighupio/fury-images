@@ -6,21 +6,21 @@ set -o pipefail
 set -u
 
 check_env_variable() {
-  if [[ -z ${!1+set} ]]; then
-    echo "Error: Define $1 environment variable"
-    JOB_RESULT=1
-    notify
-    exit 1
-  fi
+    if [[ -z ${!1+set} ]]; then
+        echo "Error: Define $1 environment variable"
+        JOB_RESULT=1
+        notify
+        exit 1
+    fi
 }
 
 check_file() {
-  if ! test -f "$1"; then
-    echo "Error: $1 does not exist."
-    JOB_RESULT=1
-    notify
-    exit 1
-  fi
+    if ! test -f "$1"; then
+        echo "Error: $1 does not exist."
+        JOB_RESULT=1
+        notify
+        exit 1
+    fi
 }
 
 # -----------------------------------------------------------------
@@ -28,9 +28,9 @@ check_file() {
 # https://api.slack.com/tutorials/tracks/posting-messages-with-curl
 # -----------------------------------------------------------------
 notify() {
-  echo "📬  sending Slack notification... "
-
-  curl -H "Content-type: application/json" \
+    echo "📬  sending Slack notification... "
+    
+    curl -H "Content-type: application/json" \
     --data "$1" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
     --output /dev/null -s \
@@ -38,17 +38,17 @@ notify() {
 }
 
 notify_error() {
-  if [ $? -ne 0 ]; then
-    notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
-  fi
+    if [ $? -ne 0 ]; then
+        notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
+    fi
 }
 
 notify_start() {
-  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}"
+    notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}"
 }
 
 notify_finish() {
-  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
+    notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
 }
 
 trap notify_error EXIT
@@ -60,29 +60,28 @@ trap notify_error EXIT
 echo -n "🛫  performing pre-flight checks... "
 
 case $PROVIDER_NAME in
-"vsphere")
-  # vSphere
-  check_env_variable VSPHERE_USER
-  check_env_variable VSPHERE_PASSWORD
-  check_env_variable VSPHERE_SERVER
-  ;;
-"aws")
-  # AWS
-  check_env_variable AWS_ACCESS_KEY_ID
-  check_env_variable AWS_SECRET_ACCESS_KEY
-  check_env_variable AWS_S3_BUCKET
-  ;;
-"gcp")
-  # GCP
-  check_env_variable GOOGLE_CREDENTIALS
-  ;;
-*)
-  # ERROR
-  echo "Provider $PROVIDER_NAME not supported"
-  JOB_RESULT=1
-  notify
-  exit 1
-  ;;
+    "vsphere")
+        # vSphere
+        check_env_variable VSPHERE_USER
+        check_env_variable VSPHERE_PASSWORD
+        check_env_variable VSPHERE_SERVER
+    ;;
+    "aws")
+        # AWS
+        check_env_variable AWS_ACCESS_KEY_ID
+        check_env_variable AWS_SECRET_ACCESS_KEY
+    ;;
+    "gcp")
+        # GCP
+        check_env_variable GOOGLE_CREDENTIALS
+    ;;
+    *)
+        # ERROR
+        echo "Provider $PROVIDER_NAME not supported"
+        JOB_RESULT=1
+        notify
+        exit 1
+    ;;
 esac
 
 # KFD Karrier Module
@@ -134,9 +133,9 @@ git clone ${GIT_REPO_URL} ${BASE_WORKDIR}
 
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
-  echo "🔐  unlocking the git repo"
-  cat /var/git-crypt.key | base64 -d >/tmp/git-crypt.key
-  git-crypt unlock /tmp/git-crypt.key
+    echo "🔐  unlocking the git repo"
+    cat /var/git-crypt.key | base64 -d >/tmp/git-crypt.key
+    git-crypt unlock /tmp/git-crypt.key
 fi
 
 mkdir -p ${WORKDIR}
@@ -165,12 +164,12 @@ tail -f ${WORKDIR}/cluster/logs/ansible.log &
 FURYCTL_RETRY=1
 FURYCTL_MAX_RETRIES=3
 while furyctl cluster apply; JOB_RESULT=$?; [ ${FURYCTL_RETRY} -lt ${FURYCTL_MAX_RETRIES} ] && [ ${JOB_RESULT} -ne 0 ]; do
-  sleep $(( ${FURYCTL_RETRY} * 10 ))
-  FURYCTL_RETRY=$(( ${FURYCTL_RETRY} + 1 ))
+    sleep $(( ${FURYCTL_RETRY} * 10 ))
+    FURYCTL_RETRY=$(( ${FURYCTL_RETRY} + 1 ))
 done
 
 if [ ${JOB_RESULT} -ne 0 ]; then
-  notify
+    notify
 fi
 
 # ------------------------------------------
@@ -202,7 +201,7 @@ kustomize build manifests/modules | kubectl apply -f -
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
-  kustomize build "manifests/providers/${PROVIDER_NAME}" | kubectl apply -f -
+    kustomize build "manifests/providers/${PROVIDER_NAME}" | kubectl apply -f -
 fi
 
 # Waiting for master node to be ready
@@ -211,8 +210,8 @@ kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdoma
 
 # TODO: FIXME this is a workaround because we have a random issue on vSphere that sometimes doesn't finds the nodes
 for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}'); do
-  # echo "forcing untaint of node $node"
-  kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
+    # echo "forcing untaint of node $node"
+    kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
 done
 
 # ------------------------------------------
