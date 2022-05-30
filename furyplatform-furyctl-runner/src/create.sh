@@ -207,6 +207,9 @@ grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/
 CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
 sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
 
+# deploy registry secrets
+retry_command "kustomize build manifests/registries | kubectl apply -f -" 10 4
+
 # deploy common modules
 retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 

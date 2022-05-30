@@ -14,12 +14,12 @@ check_env_variable() {
 }
 
 check_file() {
-if ! test -f "$1"; then
+  if ! test -f "$1"; then
     echo "Error: $1 does not exist."
     JOB_RESULT=1
     notify
     exit 1
-fi
+  fi
 }
 
 # -----------------------------------------------------------------
@@ -60,12 +60,12 @@ check_env_variable VSPHERE_USER
 check_env_variable VSPHERE_PASSWORD
 check_env_variable VSPHERE_SERVER
 
-# AWS 
+# AWS
 # check_env_variable AWS_ACCESS_KEY_ID
 # check_env_variable AWS_SECRET_ACCESS_KEY
 # check_env_variable AWS_S3_BUCKET
 
-# GIT Repository 
+# GIT Repository
 check_env_variable GIT_REPO_URL
 check_env_variable GIT_COMMITTER_NAME
 check_env_variable GIT_COMMITTER_EMAIL
