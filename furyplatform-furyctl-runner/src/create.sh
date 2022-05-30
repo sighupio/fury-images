@@ -5,11 +5,27 @@ set -e
 set -o pipefail
 set -u
 
+# $1: command to be eval'd
+# $2: seconds to sleep
+# $3: max retries
+retry_command() {
+  COMMAND="$1"
+  SLEEP_SECONDS="$2"
+  MAX_RETRIES="$3"
+  RETRY=1
+  while eval "${COMMAND}"; JOB_RESULT=$?; [ ${RETRY} -lt ${MAX_RETRIES} ] && [ ${JOB_RESULT} -ne 0 ]; do
+    BACKOFF_SECONDS=$(( ${RETRY} * ${SLEEP_SECONDS} ))
+    echo "failed running '${COMMAND}', retrying in ${BACKOFF_SECONDS} seconds..."
+    sleep "${BACKOFF_SECONDS}"
+    RETRY=$(( ${RETRY} + 1 ))
+  done
+}
+
 check_env_variable() {
     if [[ -z ${!1+set} ]]; then
         echo "Error: Define $1 environment variable"
         JOB_RESULT=1
-        notify
+        notify_error
         exit 1
     fi
 }
@@ -18,7 +34,7 @@ check_file() {
     if ! test -f "$1"; then
         echo "Error: $1 does not exist."
         JOB_RESULT=1
-        notify
+        notify_error
         exit 1
     fi
 }
@@ -29,7 +45,7 @@ check_file() {
 # -----------------------------------------------------------------
 notify() {
     echo "📬  sending Slack notification... "
-    
+
     curl -H "Content-type: application/json" \
     --data "$1" \
     -H "Authorization: Bearer ${SLACK_TOKEN}" \
@@ -79,7 +95,7 @@ case $PROVIDER_NAME in
         # ERROR
         echo "Provider $PROVIDER_NAME not supported"
         JOB_RESULT=1
-        notify
+        notify_error
         exit 1
     ;;
 esac
@@ -161,12 +177,7 @@ tail -f ${WORKDIR}/cluster/logs/terraform.logs &
 tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
 # sometimes in vSphere the apply failing with apparently no reason, and re-launching it, it ends successfully
-FURYCTL_RETRY=1
-FURYCTL_MAX_RETRIES=3
-while furyctl cluster apply; JOB_RESULT=$?; [ ${FURYCTL_RETRY} -lt ${FURYCTL_MAX_RETRIES} ] && [ ${JOB_RESULT} -ne 0 ]; do
-    sleep $(( ${FURYCTL_RETRY} * 10 ))
-    FURYCTL_RETRY=$(( ${FURYCTL_RETRY} + 1 ))
-done
+retry_command "furyctl cluster apply" 10 3
 
 if [ ${JOB_RESULT} -ne 0 ]; then
     notify
@@ -183,7 +194,7 @@ export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
 
 cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 # Download Fury modules
-furyctl vendor -H
+retry_command "furyctl vendor -H" 6 3
 
 # Copy presets ("manifests templates") to cluster folder
 cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
@@ -197,11 +208,11 @@ CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
 sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
 
 # deploy common modules
-kustomize build manifests/modules | kubectl apply -f -
+retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
-    kustomize build "manifests/providers/${PROVIDER_NAME}" | kubectl apply -f -
+    retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
 fi
 
 # Waiting for master node to be ready
@@ -220,9 +231,9 @@ done
 
 # TODO: when we will have the module with tags, we will substitute this deploy enriching the existing Furyfile
 #  with the module version
-target="https://github.com/sighupio/fury-kubernetes-karrier/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
+KARRIER_TARGET="https://github.com/sighupio/fury-kubernetes-karrier/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
 
-kustomize build ${target} | kubectl apply -f -
+retry_command "kustomize build ${KARRIER_TARGET} | kubectl apply -f -" 10 4
 
 # ------------------------------------------
 # Push to repository our changes
