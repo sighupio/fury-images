@@ -21,13 +21,16 @@ retry_command() {
     sleep "${BACKOFF_SECONDS}"
     RETRY=$(( ${RETRY} + 1 ))
   done
+
+  if [[ ${JOB_RESULT} -ne 0 ]]; then
+    exit 1
+  fi
 }
 
 check_env_variable() {
   if [[ -z ${!1+set} ]]; then
     echo "Error: Define $1 environment variable"
     JOB_RESULT=1
-    notify_error
     exit 1
   fi
 }
@@ -36,7 +39,6 @@ check_file() {
   if ! test -f "$1"; then
     echo "Error: $1 does not exist."
     JOB_RESULT=1
-    notify_error
     exit 1
   fi
 }
@@ -59,7 +61,7 @@ git_commit_push() {
   GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
   GIT_AUTHOR_EMAIL=${GIT_COMMITTER_EMAIL}
   CLUSTER_CREATION_STATUS="success"
-  if [[ ${JOB_RESULT} -ne 0 ]]; then CLUSTER_CREATION_STATUS="failure"; fi
+  if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then CLUSTER_CREATION_STATUS="failure"; fi
 
   git pull --rebase --autostash
   git add ${BASE_WORKDIR}
@@ -90,7 +92,7 @@ notify() {
 }
 
 notify_error() {
-  if [ $? -ne 0 ]; then
+  if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then
     notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* creation has failed :flushed:\"}}]}"
   fi
 }
@@ -137,7 +139,6 @@ case $PROVIDER_NAME in
     # ERROR
     echo "Provider $PROVIDER_NAME not supported"
     JOB_RESULT=1
-    notify_error
     exit 1
   ;;
 esac
@@ -219,12 +220,8 @@ touch ${WORKDIR}/cluster/logs/ansible.log
 tail -f ${WORKDIR}/cluster/logs/terraform.logs &
 tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
-# sometimes in vSphere the apply failing with apparently no reason, and re-launching it, it ends successfully
+# Sometimes in vSphere the apply failing with apparently no reason, and re-launching it, it ends successfully
 retry_command "furyctl cluster apply --no-tty" 10 3
-
-if [ ${JOB_RESULT} -ne 0 ]; then
-  notify_error
-fi
 
 # ------------------------------------------
 # Install Fury
@@ -232,11 +229,10 @@ fi
 
 echo "🐉  deploying Kubernetes Fury Distribution"
 
-# KUBECONFIG
 export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
 
-cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 # Download Fury modules
+cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 retry_command "furyctl vendor --https --no-tty" 6 3
 
 # Copy presets ("manifests templates") to cluster folder
@@ -267,10 +263,9 @@ fi
 echo "⏱  waiting for master node to be ready... "
 kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
 
-# TODO: FIXME this is a workaround because we have a random issue on vSphere that sometimes doesn't finds the nodes
+# This is a workaround because we have a random issue on vSphere that sometimes doesn't find the nodes
 for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}'); do
-  # echo "forcing untaint of node $node"
-  kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
+  kubectl taint node ${node} node.cloudprovider.kubernetes.io/uninitialized-
 done
 
 echo
