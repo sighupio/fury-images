@@ -39,6 +39,19 @@ check_file() {
   fi
 }
 
+setup_vpn() {
+  # this fails in local environment because we already have the tun interface because of is installed in the host
+  mknod /dev/net/tun c 10 200 || true
+  chmod 600 /dev/net/tun
+
+  echo "${OPENVPN_USER}" > /tmp/auth.txt
+  echo "${OPENVPN_PASSWORD}" >> /tmp/auth.txt
+
+  cat "/var/cert.openvpn" | base64 -d > /tmp/config.ovpn
+
+  openvpn --config "/tmp/config.ovpn" --auth-user-pass "/tmp/auth.txt" --script-security 3  --daemon
+}
+
 # -----------------------------------------------------------------
 # SEND NOTIFICATION TO SLACK/MAIL/OTHERS
 # https://api.slack.com/tutorials/tracks/posting-messages-with-curl
@@ -86,10 +99,16 @@ case $PROVIDER_NAME in
     # AWS
     check_env_variable AWS_ACCESS_KEY_ID
     check_env_variable AWS_SECRET_ACCESS_KEY
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
   ;;
   "gcp")
     # GCP
     check_env_variable GOOGLE_CREDENTIALS
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
   ;;
   *)
     # ERROR
