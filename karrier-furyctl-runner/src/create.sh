@@ -226,14 +226,16 @@ grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/
 CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
 sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
 
-# deploy registry secrets
-retry_command "kustomize build manifests/registries | kubectl apply -f -" 10 4
+# TODO: remove the following line once the module gets tagged, as we are going to vendor it
+sed -i s~{{KARRIER_MODULE_VERSION}}~${KARRIER_MODULE_VERSION}~ manifests/modules/karrier/kustomization.yaml
 
 # deploy common modules
+echo "👘 dressing the cluster with Fury modules"
 retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
+  echo "🍷 applying ${PROVIDER_NAME}-specific customizations"
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
 fi
 
@@ -246,16 +248,6 @@ for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}'); do
   # echo "forcing untaint of node $node"
   kubectl taint node $node node.cloudprovider.kubernetes.io/uninitialized-
 done
-
-# ------------------------------------------
-# Deploy Cluster Metadata and Fury Metadata
-# ------------------------------------------
-
-# TODO: when we will have the module with tags, we will substitute this deploy enriching the existing Furyfile
-#  with the module version
-KARRIER_TARGET="https://github.com/sighupio/fury-kubernetes-karrier/katalog/karrier/agent?ref=${KARRIER_MODULE_VERSION}"
-
-retry_command "kustomize build ${KARRIER_TARGET} | kubectl apply -f -" 10 4
 
 # ------------------------------------------
 # Push to repository our changes
