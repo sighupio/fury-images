@@ -1,13 +1,13 @@
 FROM alpine:3.10
 
-LABEL maintainer="niccolo@sighup.io"
+LABEL maintainer="engineering@sighup.io"
 
 ENV AWSCLI_VERSION 1.19
 ENV GCLOUD_VERSION 344.0.0
 ENV TERRAFORM_VERSION 1.0.1
 ENV KUBECTL_VERSION v1.21.2
 ENV KUSTOMIZE_VERSION v3.6.1
-ENV FURYCTL_VERSION v0.6.1
+ENV FURYCTL_VERSION v0.7.0
 ENV FURYAGENT_VERSION v0.2.3
 ENV VELERO_VERSION v1.6.0
 ENV DIRENV_VERSION v2.28.0
@@ -35,9 +35,9 @@ RUN apk --update --no-cache add \
   ansible
 
 RUN apk add g++ make openssl openssl-dev --no-cache --update && \
-    curl -L https://github.com/AGWA/git-crypt/archive/$GIT_CRYPT.tar.gz | tar zxv -C /var/tmp  && \ 
+    curl -L https://github.com/AGWA/git-crypt/archive/$GIT_CRYPT.tar.gz | tar zxv -C /var/tmp  && \
     cd /var/tmp/git-crypt-$GIT_CRYPT && make && make install && \
-    rm -r /var/tmp/git-crypt-$GIT_CRYPT 
+    rm -r /var/tmp/git-crypt-$GIT_CRYPT
 
 RUN pip3 install --upgrade pip
 RUN pip3 install requests awscli==${AWSCLI_VERSION}
@@ -104,4 +104,4 @@ WORKDIR /workdir
 ENTRYPOINT ["/create.sh"]
 
 # To delete cluster use:
-# ENTRYPOINT ["/destroy.sh"] 
+# ENTRYPOINT ["/destroy.sh"]
