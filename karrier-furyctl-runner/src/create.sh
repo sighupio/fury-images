@@ -40,10 +40,6 @@ check_file() {
 }
 
 setup_vpn() {
-  # where the pod mount the secret
-  config_file="/var/cert.openvpn"
-
-  apk add openvpn
   # this fails in local environment because we already have the tun interface because of is installed in the host
   mknod /dev/net/tun c 10 200 || true
   chmod 600 /dev/net/tun
@@ -51,10 +47,7 @@ setup_vpn() {
   echo "${OPENVPN_USER}" > /tmp/auth.txt
   echo "${OPENVPN_PASSWORD}" >> /tmp/auth.txt
 
-  cat ${config_file} | base64 -d > /tmp/config.ovpn
-  # TODO: remove this when openvpn will be >= 2.5. This hack is mandatory because the openvpn version is not able
-  #  to connect with the data-ciphers are new option in openvpn > 2.5
-  sed -i '/data-ciphers/d' /tmp/config.ovpn
+  cat "/var/cert.openvpn" | base64 -d > /tmp/config.ovpn
 
   openvpn --config "/tmp/config.ovpn" --auth-user-pass "/tmp/auth.txt" --script-security 3  --daemon
 }
