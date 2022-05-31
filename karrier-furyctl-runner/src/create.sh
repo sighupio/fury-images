@@ -183,7 +183,7 @@ cd ${WORKDIR}
 echo "🚀  starting cluster creation"
 cp /var/cluster.yml ${WORKDIR}/cluster.yml
 
-furyctl cluster init --reset
+furyctl cluster init --reset --no-tty
 
 # Create terraform and ansible log files, and stream their output
 
@@ -196,7 +196,7 @@ tail -f ${WORKDIR}/cluster/logs/terraform.logs &
 tail -f ${WORKDIR}/cluster/logs/ansible.log &
 
 # sometimes in vSphere the apply failing with apparently no reason, and re-launching it, it ends successfully
-retry_command "furyctl cluster apply" 10 3
+retry_command "furyctl cluster apply --no-tty" 10 3
 
 if [ ${JOB_RESULT} -ne 0 ]; then
   notify_error
@@ -213,7 +213,7 @@ export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
 
 cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
 # Download Fury modules
-retry_command "furyctl vendor -H" 6 3
+retry_command "furyctl vendor --https --no-tty" 6 3
 
 # Copy presets ("manifests templates") to cluster folder
 cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
