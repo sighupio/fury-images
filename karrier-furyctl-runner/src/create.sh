@@ -39,6 +39,15 @@ check_file() {
   fi
 }
 
+setup_vpn() {
+  config_file=$1
+  mknod /dev/net/tun c 10 200
+  chmod 600 /dev/net/tun
+  echo "${OPENVPN_USER}" > /tmp/auth.txt
+  echo "${OPENVPN_PASSWORD}" >> /tmp/auth.txt
+  openvpn --config "${config_file}" --auth-user-pass "/tmp/auth.txt" --script-security 3  --daemon
+}
+
 # -----------------------------------------------------------------
 # SEND NOTIFICATION TO SLACK/MAIL/OTHERS
 # https://api.slack.com/tutorials/tracks/posting-messages-with-curl
@@ -86,10 +95,16 @@ case $PROVIDER_NAME in
     # AWS
     check_env_variable AWS_ACCESS_KEY_ID
     check_env_variable AWS_SECRET_ACCESS_KEY
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
   ;;
   "gcp")
     # GCP
     check_env_variable GOOGLE_CREDENTIALS
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
   ;;
   *)
     # ERROR
