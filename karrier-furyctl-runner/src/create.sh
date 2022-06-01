@@ -288,11 +288,6 @@ fi
 echo "⏱  waiting for master node to be ready... "
 kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
 
-# This is a workaround because we have a random issue on vSphere that sometimes doesn't find the nodes
-for node in $(kubectl get nodes -ojsonpath='{.items[*].metadata.name}'); do
-  kubectl taint node ${node} node.cloudprovider.kubernetes.io/uninitialized-
-done
-
 echo
 echo "we're done! enjoy your cluster 🎉"
 echo
