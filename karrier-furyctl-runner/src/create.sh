@@ -119,6 +119,11 @@ case $PROVIDER_NAME in
     check_env_variable VSPHERE_USER
     check_env_variable VSPHERE_PASSWORD
     check_env_variable VSPHERE_SERVER
+
+    VSPHERE_PORT=443
+    VSPHERE_INSECURE_FLAG=true
+    VSPHERE_DATACENTERS=SIGHUPLAB
+    VSPHERE_FOLDER=kubernetes/demo_app/
   ;;
   "aws")
     # AWS
@@ -255,6 +260,26 @@ retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
+  if [ "${PROVIDER_NAME}" == "vsphere" ]; then
+    sed -i s~{{VSPHERE_DATACENTERS}}~${VSPHERE_DATACENTERS}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
+    sed -i s~{{VSPHERE_FOLDER}}~${VSPHERE_FOLDER}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
+    sed -i s~{{VSPHERE_INSECURE_FLAG}}~${VSPHERE_INSECURE_FLAG}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
+    sed -i s~{{VSPHERE_PORT}}~${VSPHERE_PORT}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
+    sed -i s~{{VSPHERE_SERVER}}~${VSPHERE_SERVER}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
+
+    sed -i s~{{VSPHERE_PASSWORD}}~${VSPHERE_PASSWORD}~ manifests/providers/vsphere/secrets/vsphere-credentials.yml
+    sed -i s~{{VSPHERE_SERVER}}~${VSPHERE_SERVER}~ manifests/providers/vsphere/secrets/vsphere-credentials.yml
+    sed -i s~{{VSPHERE_USER}}~${VSPHERE_USER}~ manifests/providers/vsphere/secrets/vsphere-credentials.yml
+
+    sed -i s~{{VSPHERE_CLUSTER_ID}}~${CLUSTER_FULL_NAME}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_DATACENTERS}}~${VSPHERE_DATACENTERS}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_INSECURE_FLAG}}~${VSPHERE_INSECURE_FLAG}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_PASSWORD}}~${VSPHERE_PASSWORD}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_PORT}}~${VSPHERE_PORT}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_SERVER}}~${VSPHERE_SERVER}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+    sed -i s~{{VSPHERE_USER}}~${VSPHERE_USER}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+  fi
+
   echo "🍷 applying ${PROVIDER_NAME}-specific customizations"
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
 fi
