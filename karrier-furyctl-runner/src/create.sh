@@ -120,10 +120,20 @@ case $PROVIDER_NAME in
     check_env_variable VSPHERE_PASSWORD
     check_env_variable VSPHERE_SERVER
 
-    VSPHERE_PORT=443
-    VSPHERE_INSECURE_FLAG=true
-    VSPHERE_DATACENTERS=SIGHUPLAB
-    VSPHERE_FOLDER=kubernetes/demo_app/
+    # TODO: the following VSPHERE_* vars need to be passed to this script by its caller
+    VSPHERE_PORT="443"
+    VSPHERE_INSECURE_FLAG="true"
+    VSPHERE_DATACENTERS="SIGHUPLAB"
+    VSPHERE_DATASTORE="datastore1 (1)"
+    VSPHERE_FOLDER="kubernetes/demo_app/"
+
+    GOVC_URL="https://${VSPHERE_SERVER}"
+    GOVC_DATACENTER="${VSPHERE_DATACENTERS}"
+    GOVC_INSECURE="${VSPHERE_INSECURE_FLAG}"
+    GOVC_USERNAME="${VSPHERE_USER}"
+    GOVC_PASSWORD="${VSPHERE_PASSWORD}"
+    GOVC_DATASTORE="${VSPHERE_DATASTORE}"
+
   ;;
   "aws")
     # AWS
@@ -287,6 +297,22 @@ fi
 # Waiting for master node to be ready
 echo "⏱  waiting for master node to be ready... "
 kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
+
+# Hack to ensure hostnames are set, as sometimes vsphere fails to assign them
+if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
+  VSPHERE_VMS=$(govc ls "/${VSPHERE_DATACENTERS}/vm/${CLUSTER_FULL_NAME}")
+
+  for VSPHERE_VM in ${VSPHERE_VMS}; do
+    VM_HOSTNAME=$(govc vm.info -json=true "${VSPHERE_VM}" | jq '.VirtualMachines[0].Guest.HostName' --raw-output)
+
+    VSPHERE_RETRY=1
+    VSPHERE_MAX_RETRIES=5
+    while [[ -z "${VM_HOSTNAME}" ]] && [ ${VSPHERE_RETRY} -lt ${VSPHERE_MAX_RETRIES} ]; do
+      govc vm.change -vm.ipath="${VSPHERE_VM}" -name=$(basename ${VSPHERE_VM}) -verbose=true
+      sleep 5
+    done
+  done
+fi
 
 echo
 echo "we're done! enjoy your cluster 🎉"
