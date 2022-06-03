@@ -310,6 +310,7 @@ if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
     while [[ -z "${VM_HOSTNAME}" ]] && [ ${VSPHERE_RETRY} -lt ${VSPHERE_MAX_RETRIES} ]; do
       govc vm.change -vm.ipath="${VSPHERE_VM}" -name=$(basename ${VSPHERE_VM}) -verbose=true
       sleep 5
+      VSPHERE_RETRY=$(( ${VSPHERE_RETRY} + 1 ))
     done
   done
 fi
