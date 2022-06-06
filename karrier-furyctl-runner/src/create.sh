@@ -261,6 +261,9 @@ grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/
 CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
 sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
 
+# Setup karrier agent apis ingresses
+sed -i s~{{KARRIER_AGENT_HOST}}~${INGRESS_BASE_URL}~ manifests/modules/karrier/ingress.yaml
+
 # TODO: remove the following line once the module gets tagged, as we are going to vendor it
 sed -i s~{{KARRIER_MODULE_VERSION}}~${KARRIER_MODULE_VERSION}~ manifests/modules/karrier/kustomization.yaml
 
