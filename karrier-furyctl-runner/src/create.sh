@@ -267,11 +267,6 @@ cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
 # Update the ingress hostname accordingly
 grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/${INGRESS_BASE_URL}/
 
-# Update the cluster cidr in the networking patch using the info from cluster.yml
-# We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
-CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
-sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
-
 # Setup karrier agent apis ingresses
 sed -i s~{{KARRIER_AGENT_HOST}}~${INGRESS_BASE_URL}~ manifests/modules/karrier/ingress.yaml
 
@@ -285,6 +280,12 @@ retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
+
+    # Update the cluster cidr in the networking patch using the info from cluster.yml
+    # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
+    CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
+    sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/providers/vsphere/networking/patches/calico-ds.yml
+
     sed -i s~{{VSPHERE_DATACENTERS}}~${VSPHERE_DATACENTERS}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
     sed -i s~{{VSPHERE_FOLDER}}~${VSPHERE_FOLDER}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
     sed -i s~{{VSPHERE_INSECURE_FLAG}}~${VSPHERE_INSECURE_FLAG}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
