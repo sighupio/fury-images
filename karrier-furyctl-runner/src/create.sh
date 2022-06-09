@@ -277,6 +277,15 @@ sed -i s~{{KARRIER_MODULE_VERSION}}~${KARRIER_MODULE_VERSION}~ manifests/modules
 echo "👘 dressing the cluster with Fury modules"
 retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 
+# we need some missing components on provider side because of need to communicate with the metadata api inside the
+# cluster
+if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
+  cd terraform/providers/${PROVIDER_NAME}
+  terraform init
+  TF_VAR_fqdn=${INGRESS_BASE_URL} terraform plan
+  retry_command "terraform apply -auto-approve" 10 4
+fi
+
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
@@ -332,6 +341,7 @@ if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
     done
   done
 fi
+
 
 echo
 echo "we're done! enjoy your cluster 🎉"
