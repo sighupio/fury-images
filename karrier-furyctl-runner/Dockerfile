@@ -39,7 +39,8 @@ RUN apk --update --no-cache add \
   tar \
   tree \
   vim \
-  wget
+  wget \
+  aws-cli
 
 RUN apk add g++ make openssl openssl-dev --no-cache --update && \
   curl -L https://github.com/AGWA/git-crypt/archive/${GIT_CRYPT_VERSION}.tar.gz | tar zxv -C /var/tmp  && \

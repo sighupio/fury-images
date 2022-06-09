@@ -113,50 +113,6 @@ trap handle_exit EXIT
 
 echo -n "🛫  performing pre-flight checks... "
 
-case $PROVIDER_NAME in
-  "vsphere")
-    # vSphere
-    check_env_variable VSPHERE_USER
-    check_env_variable VSPHERE_PASSWORD
-    check_env_variable VSPHERE_SERVER
-
-    # TODO: the following VSPHERE_* vars need to be passed to this script by its caller
-    VSPHERE_PORT="443"
-    VSPHERE_INSECURE_FLAG="true"
-    VSPHERE_DATACENTERS="SIGHUPLAB"
-    VSPHERE_DATASTORE="datastore1 (1)"
-    VSPHERE_FOLDER="kubernetes/demo_app/"
-
-    GOVC_URL="https://${VSPHERE_SERVER}"
-    GOVC_DATACENTER="${VSPHERE_DATACENTERS}"
-    GOVC_INSECURE="${VSPHERE_INSECURE_FLAG}"
-    GOVC_USERNAME="${VSPHERE_USER}"
-    GOVC_PASSWORD="${VSPHERE_PASSWORD}"
-    GOVC_DATASTORE="${VSPHERE_DATASTORE}"
-
-  ;;
-  "aws")
-    # AWS
-    check_env_variable AWS_ACCESS_KEY_ID
-    check_env_variable AWS_SECRET_ACCESS_KEY
-    check_env_variable OPENVPN_USER
-    check_env_variable OPENVPN_PASSWORD
-    setup_vpn
-  ;;
-  "gcp")
-    # GCP
-    check_env_variable GOOGLE_CREDENTIALS
-    check_env_variable OPENVPN_USER
-    check_env_variable OPENVPN_PASSWORD
-    setup_vpn
-  ;;
-  *)
-    # ERROR
-    echo "Provider $PROVIDER_NAME not supported"
-    JOB_RESULT=1
-    exit 1
-  ;;
-esac
 
 # KFD Karrier Module
 check_env_variable KARRIER_MODULE_VERSION
@@ -181,16 +137,71 @@ check_env_variable INGRESS_BASE_URL
 check_file /var/Furyfile.yml
 check_file /var/cluster.yml
 
-# Cluster Metadata / Fury Metadata configmap
-# T.B.D.
-
-echo "OK."
-
 # Auxiliary ENV VARS
 JOB_RESULT=0
 BASE_WORKDIR="/workdir"
 CLUSTER_FULL_NAME=${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}
 WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}"
+
+case $PROVIDER_NAME in
+  "vsphere")
+    # vSphere
+    check_env_variable VSPHERE_USER
+    check_env_variable VSPHERE_PASSWORD
+    check_env_variable VSPHERE_SERVER
+
+    # TODO: the following VSPHERE_* vars need to be passed to this script by its caller
+    VSPHERE_PORT="443"
+    VSPHERE_INSECURE_FLAG="true"
+    VSPHERE_DATACENTERS="SIGHUPLAB"
+    VSPHERE_DATASTORE="datastore1 (1)"
+    VSPHERE_FOLDER="kubernetes/demo_app/"
+
+    GOVC_URL="https://${VSPHERE_SERVER}"
+    GOVC_DATACENTER="${VSPHERE_DATACENTERS}"
+    GOVC_INSECURE="${VSPHERE_INSECURE_FLAG}"
+    GOVC_USERNAME="${VSPHERE_USER}"
+    GOVC_PASSWORD="${VSPHERE_PASSWORD}"
+    GOVC_DATASTORE="${VSPHERE_DATASTORE}"
+
+    LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/users/admin.conf"
+
+  ;;
+  "aws")
+    # AWS
+    check_env_variable AWS_ACCESS_KEY_ID
+    check_env_variable AWS_SECRET_ACCESS_KEY
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
+
+    LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/kubeconfig"
+  ;;
+  "gcp")
+    # GCP
+    check_env_variable GOOGLE_CREDENTIALS
+    check_env_variable OPENVPN_USER
+    check_env_variable OPENVPN_PASSWORD
+    setup_vpn
+
+    #TODO: we have to check if in GKE is this the right kubeconfig path
+    LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/kubeconfig"
+  ;;
+  *)
+    # ERROR
+    echo "Provider $PROVIDER_NAME not supported"
+    JOB_RESULT=1
+    exit 1
+  ;;
+esac
+
+
+
+# Cluster Metadata / Fury Metadata configmap
+# T.B.D.
+
+echo "OK."
+
 
 # Let's start!
 
@@ -244,7 +255,7 @@ retry_command "furyctl cluster apply --no-tty" 10 3
 
 echo "🐉  deploying Kubernetes Fury Distribution"
 
-export KUBECONFIG=${WORKDIR}/cluster/secrets/users/admin.conf
+export KUBECONFIG=${LOCAL_KUBECONFIG}
 
 # Download Fury modules
 cp /var/Furyfile.yml ${WORKDIR}/Furyfile.yml
@@ -256,11 +267,6 @@ cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
 # Update the ingress hostname accordingly
 grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/${INGRESS_BASE_URL}/
 
-# Update the cluster cidr in the networking patch using the info from cluster.yml
-# We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
-CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
-sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/modules/networking/patches/calico-ds.yml
-
 # Setup karrier agent apis ingresses
 sed -i s~{{KARRIER_AGENT_HOST}}~${INGRESS_BASE_URL}~ manifests/modules/karrier/ingress.yaml
 
@@ -271,9 +277,24 @@ sed -i s~{{KARRIER_MODULE_VERSION}}~${KARRIER_MODULE_VERSION}~ manifests/modules
 echo "👘 dressing the cluster with Fury modules"
 retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 
+# we need some missing components on provider side because of need to communicate with the metadata api inside the
+# cluster
+if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
+  cd terraform/providers/${PROVIDER_NAME}
+  terraform init
+  TF_VAR_fqdn=${INGRESS_BASE_URL} terraform plan
+  retry_command "terraform apply -auto-approve" 10 4
+fi
+
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
+
+    # Update the cluster cidr in the networking patch using the info from cluster.yml
+    # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
+    CLUSTER_POD_CIDR=$(yq eval .spec.clusterPODCIDR /var/cluster.yml)
+    sed -i s~{{CALICO_IPV4POOL_CIDR}}~${CLUSTER_POD_CIDR}~ manifests/providers/vsphere/networking/patches/calico-ds.yml
+
     sed -i s~{{VSPHERE_DATACENTERS}}~${VSPHERE_DATACENTERS}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
     sed -i s~{{VSPHERE_FOLDER}}~${VSPHERE_FOLDER}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
     sed -i s~{{VSPHERE_INSECURE_FLAG}}~${VSPHERE_INSECURE_FLAG}~ manifests/providers/vsphere/secrets/vsphere-cm-cloud-config.yml
@@ -297,12 +318,15 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
 fi
 
-# Waiting for master node to be ready
-echo "⏱  waiting for master node to be ready... "
-kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
+
 
 # Hack to ensure hostnames are set, as sometimes vsphere fails to assign them
 if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
+
+  # Waiting for master node to be ready
+  echo "⏱  waiting for master node to be ready... "
+  kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
+
   VSPHERE_VMS=$(govc ls "/${VSPHERE_DATACENTERS}/vm/${CLUSTER_FULL_NAME}")
 
   for VSPHERE_VM in ${VSPHERE_VMS}; do
@@ -317,6 +341,7 @@ if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
     done
   done
 fi
+
 
 echo
 echo "we're done! enjoy your cluster 🎉"
