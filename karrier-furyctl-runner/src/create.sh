@@ -264,6 +264,9 @@ retry_command "furyctl vendor --https --no-tty" 6 3
 # Copy presets ("manifests templates") to cluster folder
 cp -r ${BASE_WORKDIR}/presets ${WORKDIR}/manifests
 
+# Copy terraform to cluster folder
+cp -r ${BASE_WORKDIR}/terraform ${WORKDIR}/
+
 # Update the ingress hostname accordingly
 grep -rl '{{INGRESS_BASE_URL}}' manifests | xargs sed -i s/{{INGRESS_BASE_URL}}/${INGRESS_BASE_URL}/
 
