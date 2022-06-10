@@ -284,13 +284,20 @@ retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 # cluster
 if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
   cd terraform/providers/${PROVIDER_NAME}
+  instance_filter="k8s.io/cluster/${CLUSTER_NAME}"
   terraform init
-  TF_VAR_fqdn=${INGRESS_BASE_URL} terraform plan
-  retry_command "terraform apply -auto-approve" 10 4
+  TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform plan
+  retry_command "TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform apply -auto-approve" 10 4
 fi
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
+
+  if [ "${PROVIDER_NAME}" == "aws" ]; then
+    echo "🧹 removing default coredns due to wrong toleration"
+    kubectl delete deployment coredns -n kube-system
+  fi
+
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
 
     # Update the cluster cidr in the networking patch using the info from cluster.yml
