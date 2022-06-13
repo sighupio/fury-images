@@ -5,7 +5,11 @@ set -e
 set -o pipefail
 set -u
 
+# Basic ENV VARS
 SHOULD_COMMIT_AND_PUSH=0
+JOB_RESULT=0
+BASE_WORKDIR="/workdir"
+START_TIME=$(date +"%s")
 
 # $1: command to be eval'd
 # $2: seconds to sleep
@@ -138,10 +142,8 @@ check_file /var/Furyfile.yml
 check_file /var/cluster.yml
 
 # Auxiliary ENV VARS
-JOB_RESULT=0
-BASE_WORKDIR="/workdir"
 CLUSTER_FULL_NAME=${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}
-WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}"
+WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}-${START_TIME}"
 
 case $PROVIDER_NAME in
   "vsphere")
