@@ -297,8 +297,12 @@ fi
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
 
   if [ "${PROVIDER_NAME}" == "aws" ]; then
+    export DNS_CLUSTER_IP=$(kubectl get svc -n kube-system kube-dns -o jsonpath='{.spec.clusterIP}')
     echo "🧹 removing default coredns due to wrong toleration"
     kubectl delete deployment coredns -n kube-system
+
+    sed -i "s/DNS_CLUSTER_IP/$DNS_CLUSTER_IP/g" manifests/providers/aws/dns.yaml
+
   fi
 
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
@@ -327,8 +331,11 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
     sed -i s~{{VSPHERE_USER}}~${VSPHERE_USER}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
   fi
 
+
+
   echo "🍷 applying ${PROVIDER_NAME}-specific customizations"
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
+
 fi
 
 
