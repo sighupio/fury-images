@@ -216,7 +216,7 @@ echo "machine github.com login ${CLUSTER_ENVIRONMENT} password ${FURYCTL_TOKEN}"
 # Clone the repo where we'll put all the stuff and cd into it
 # -------------------------------------------------------------------------
 
-git clone ${GIT_REPO_URL} ${BASE_WORKDIR}
+retry_command "git clone ${GIT_REPO_URL} ${BASE_WORKDIR}" 10 4
 
 # If we find a git crypt key, let's unlock the repo.
 if [[ -f "/var/git-crypt.key" ]]; then
