@@ -181,10 +181,16 @@ case $PROVIDER_NAME in
   ;;
   "gcp")
     # GCP
-    check_env_variable GOOGLE_CREDENTIALS
+    check_env_variable GOOGLE_APPLICATION_CREDENTIALS
+    check_env_variable GOOGLE_PROJECT
+    check_env_variable GOOGLE_REGION
     check_env_variable OPENVPN_USER
     check_env_variable OPENVPN_PASSWORD
     setup_vpn
+
+    #this is necessary because we receive a base64 encoded json
+    echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 --decode > /tmp/credentials.json
+    export GOOGLE_APPLICATION_CREDENTIALS="/tmp/credentials.json"
 
     #TODO: we have to check if in GKE is this the right kubeconfig path
     LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/kubeconfig"
