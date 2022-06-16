@@ -189,7 +189,7 @@ case $PROVIDER_NAME in
     setup_vpn
 
     #this is necessary because we receive a base64 encoded json
-    echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 --decode > /tmp/credentials.json
+    echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 -d > /tmp/credentials.json
     export GOOGLE_APPLICATION_CREDENTIALS="/tmp/credentials.json"
 
     #TODO: we have to check if in GKE is this the right kubeconfig path

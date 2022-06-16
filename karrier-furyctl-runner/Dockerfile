@@ -20,6 +20,7 @@ ENV KUSTOMIZE_VERSION v3.10.0
 ENV TERRAFORM_VERSION 1.0.1
 ENV VELERO_VERSION v1.6.0
 ENV YQ_VERSION v4.25.2
+ENV CLOUDSDK_PYTHON /root/.asdf/installs/python/3.7.13/bin/python3.7
 
 RUN apk --update --no-cache add \
   ansible \
@@ -40,7 +41,16 @@ RUN apk --update --no-cache add \
   tree \
   vim \
   wget \
-  aws-cli
+  aws-cli \
+  build-base \
+  libffi-dev  \
+  openssl-dev \
+  bzip2-dev \
+  zlib-dev \
+  xz-dev  \
+  readline-dev \
+  sqlite-dev  \
+  tk-dev
 
 RUN apk add g++ make openssl openssl-dev --no-cache --update && \
   curl -L https://github.com/AGWA/git-crypt/archive/${GIT_CRYPT_VERSION}.tar.gz | tar zxv -C /var/tmp  && \
@@ -49,6 +59,11 @@ RUN apk add g++ make openssl openssl-dev --no-cache --update && \
 
 RUN pip3 install --upgrade pip
 RUN pip3 install requests awscli==${AWSCLI_VERSION}
+
+ENV HOME=/root
+RUN git clone --depth 1 https://github.com/asdf-vm/asdf.git ${HOME}/.asdf
+ENV PATH="$PATH:$HOME/.asdf/bin:$HOME/.asdf/shims"
+RUN asdf plugin-add python && asdf install python 3.7.13
 
 # Install gcloud
 RUN curl -L https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-${ARCH_ALT}.tar.gz -o /tmp/google-cloud-sdk-${GCLOUD_VERSION}-linux-${ARCH_ALT}.tar.gz && \
