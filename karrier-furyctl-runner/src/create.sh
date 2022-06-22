@@ -151,20 +151,18 @@ case $PROVIDER_NAME in
     check_env_variable VSPHERE_USER
     check_env_variable VSPHERE_PASSWORD
     check_env_variable VSPHERE_SERVER
-
-    # TODO: the following VSPHERE_* vars need to be passed to this script by its caller
-    VSPHERE_PORT="443"
-    VSPHERE_INSECURE_FLAG="true"
-    VSPHERE_DATACENTERS="SIGHUPLAB"
-    VSPHERE_DATASTORE="datastore1 (1)"
-    VSPHERE_FOLDER="kubernetes/demo_app/"
+    check_env_variable VSPHERE_PORT
+    check_env_variable VSPHERE_INSECURE_FLAG
+    check_env_variable VSPHERE_DATACENTERS
+    check_env_variable VSPHERE_DATASTORE_NAME
+    check_env_variable VSPHERE_FOLDER
 
     GOVC_URL="https://${VSPHERE_SERVER}"
     GOVC_DATACENTER="${VSPHERE_DATACENTERS}"
     GOVC_INSECURE="${VSPHERE_INSECURE_FLAG}"
     GOVC_USERNAME="${VSPHERE_USER}"
     GOVC_PASSWORD="${VSPHERE_PASSWORD}"
-    GOVC_DATASTORE="${VSPHERE_DATASTORE}"
+    GOVC_DATASTORE="${VSPHERE_DATASTORE_NAME}"
 
     LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/users/admin.conf"
 
@@ -312,6 +310,7 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   fi
 
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
+    VSPHERE_DATASTORE_URL=$(govc datastore.info -json=true | jq '.Datastores | .[] | select(.Name == "${VSPHERE_DATASTORE_NAME}") | .Info.Url' --raw-output)
 
     # Update the cluster cidr in the networking patch using the info from cluster.yml
     # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
@@ -335,16 +334,14 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
     sed -i s~{{VSPHERE_PORT}}~${VSPHERE_PORT}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
     sed -i s~{{VSPHERE_SERVER}}~${VSPHERE_SERVER}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
     sed -i s~{{VSPHERE_USER}}~${VSPHERE_USER}~ manifests/providers/vsphere/secrets/vsphere-csi-config.yml
+
+    sed -i s~{{VSPHERE_DATASTORE_URL}}~${VSPHERE_DATASTORE_URL}~ manifests/providers/vsphere/resources/sc.yml
   fi
-
-
 
   echo "🍷 applying ${PROVIDER_NAME}-specific customizations"
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
 
 fi
-
-
 
 # Hack to ensure hostnames are set, as sometimes vsphere fails to assign them
 if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
@@ -367,7 +364,6 @@ if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
     done
   done
 fi
-
 
 echo
 echo "we're done! enjoy your cluster 🎉"
