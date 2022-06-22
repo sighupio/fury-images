@@ -128,7 +128,7 @@ check_env_variable GIT_COMMITTER_EMAIL
 
 # Furyctl
 check_env_variable FURYCTL_TOKEN
-check_env_variable CLUSTER_NAME
+check_env_variable CLUSTER_SLUG
 check_env_variable CLUSTER_ENVIRONMENT
 
 # Slack
@@ -142,8 +142,8 @@ check_file /var/Furyfile.yml
 check_file /var/cluster.yml
 
 # Auxiliary ENV VARS
-CLUSTER_FULL_NAME=${CLUSTER_NAME}-${CLUSTER_ENVIRONMENT}
-WORKDIR="${BASE_WORKDIR}/${CLUSTER_FULL_NAME}-${START_TIME}"
+CLUSTER_FULL_NAME=${CLUSTER_SLUG}-${CLUSTER_ENVIRONMENT}
+WORKDIR="${BASE_WORKDIR}/${CLUSTER_SLUG}-${START_TIME}"
 
 case $PROVIDER_NAME in
   "vsphere")
@@ -292,7 +292,7 @@ retry_command "kustomize build manifests/modules | kubectl apply -f -" 10 4
 # cluster
 if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
   cd terraform/providers/${PROVIDER_NAME}
-  instance_filter="k8s.io/cluster/${CLUSTER_NAME}"
+  instance_filter="k8s.io/cluster/${CLUSTER_SLUG}"
   terraform init
   TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform plan
   retry_command "TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform apply -auto-approve" 10 4
