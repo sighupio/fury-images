@@ -310,7 +310,7 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
   fi
 
   if [ "${PROVIDER_NAME}" == "vsphere" ]; then
-    VSPHERE_DATASTORE_URL=$(govc datastore.info -json=true | jq '.Datastores | .[] | select(.Name == "${VSPHERE_DATASTORE_NAME}") | .Info.Url' --raw-output)
+    VSPHERE_DATASTORE_URL=$(govc datastore.info -json=true | jq ".Datastores | .[] | select(.Name == \"${VSPHERE_DATASTORE_NAME}\") | .Info.Url" --raw-output)
 
     # Update the cluster cidr in the networking patch using the info from cluster.yml
     # We use ~ as separator instead of / to avoid the confusion with the slash in the network cidr
