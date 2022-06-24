@@ -117,7 +117,6 @@ trap handle_exit EXIT
 
 echo -n "🛫  performing pre-flight checks... "
 
-
 # KFD Karrier Module
 check_env_variable KARRIER_MODULE_VERSION
 
@@ -165,7 +164,6 @@ case $PROVIDER_NAME in
     GOVC_DATASTORE="${VSPHERE_DATASTORE_NAME}"
 
     LOCAL_KUBECONFIG="${WORKDIR}/cluster/secrets/users/admin.conf"
-
   ;;
   "aws")
     # AWS
@@ -201,13 +199,7 @@ case $PROVIDER_NAME in
   ;;
 esac
 
-
-
-# Cluster Metadata / Fury Metadata configmap
-# T.B.D.
-
 echo "OK."
-
 
 # Let's start!
 
@@ -299,7 +291,6 @@ fi
 
 # deploy provider-specific modules
 if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
-
   if [ "${PROVIDER_NAME}" == "aws" ]; then
     export DNS_CLUSTER_IP=$(kubectl get svc -n kube-system kube-dns -o jsonpath='{.spec.clusterIP}')
     echo "🧹 removing default coredns due to wrong toleration"
@@ -340,16 +331,17 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
 
   echo "🍷 applying ${PROVIDER_NAME}-specific customizations"
   retry_command "kustomize build 'manifests/providers/${PROVIDER_NAME}' | kubectl apply -f -" 10 4
-
 fi
 
-# Hack to ensure hostnames are set, as sometimes vsphere fails to assign them
 if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
+  # Restart the coredns pods as we overwrite the configmap in the previous step
+  kubectl delete pods -l k8s-app=kube-dns -n kube-system
 
   # Waiting for master node to be ready
   echo "⏱  waiting for master node to be ready... "
   kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
 
+  # Hack to ensure hostnames are set, as sometimes vsphere fails to assign them
   VSPHERE_VMS=$(govc ls "/${VSPHERE_DATACENTERS}/vm/${CLUSTER_FULL_NAME}")
 
   for VSPHERE_VM in ${VSPHERE_VMS}; do
