@@ -334,9 +334,6 @@ if [ -d "manifests/providers/${PROVIDER_NAME}" ]; then
 fi
 
 if [[ "${PROVIDER_NAME}" == "vsphere" ]]; then
-  # Restart the coredns pods as we overwrite the configmap in the previous step
-  kubectl delete pods -l k8s-app=kube-dns -n kube-system
-
   # Waiting for master node to be ready
   echo "⏱  waiting for master node to be ready... "
   kubectl wait --for=condition=Ready nodes/${CLUSTER_FULL_NAME}-master-1.localdomain --timeout 5m
