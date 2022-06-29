@@ -57,7 +57,7 @@ setup_vpn() {
 
   cat "/var/cert.openvpn" | base64 -d > /tmp/config.ovpn
 
-  openvpn --config "/tmp/config.ovpn" --auth-user-pass "/tmp/auth.txt" --script-security 3  --daemon
+  retry_command 'openvpn --config "/tmp/config.ovpn" --auth-user-pass "/tmp/auth.txt" --script-security 3  --daemon' 20 4
 }
 
 git_commit_push() {
@@ -67,10 +67,10 @@ git_commit_push() {
   CLUSTER_CREATION_STATUS="success"
   if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then CLUSTER_CREATION_STATUS="failure"; fi
 
-  git pull --rebase --autostash
+  retry_command "git pull --rebase --autostash" 20 4
   git add ${BASE_WORKDIR}
   git commit -m "Create cluster ${CLUSTER_FULL_NAME}: ${CLUSTER_CREATION_STATUS}"
-  git push
+  retry_command "git push" 20 4
 }
 
 handle_exit() {
