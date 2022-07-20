@@ -141,7 +141,7 @@ check_file /var/Furyfile.yml
 check_file /var/cluster.yml
 
 # Auxiliary ENV VARS
-CLUSTER_FULL_NAME="${CLUSTER_SLUG}--${CLUSTER_UUID}"
+CLUSTER_FULL_NAME="${CLUSTER_SLUG}--${CLUSTER_ENVIRONMENT}"
 WORKDIR="${BASE_WORKDIR}/${CLUSTER_SLUG}--${CLUSTER_UUID}"
 
 case $PROVIDER_NAME in
