@@ -129,6 +129,7 @@ check_env_variable GIT_COMMITTER_EMAIL
 check_env_variable FURYCTL_TOKEN
 check_env_variable CLUSTER_SLUG
 check_env_variable CLUSTER_ENVIRONMENT
+check_env_variable CLUSTER_UUID
 
 # Slack
 check_env_variable SLACK_TOKEN
