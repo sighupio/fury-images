@@ -67,6 +67,7 @@ git_commit_push() {
   CLUSTER_DESTROY_STATUS="success"
   if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then CLUSTER_DESTROY_STATUS="failure"; fi
 
+
   retry_command "git pull --rebase --autostash" 20 4
   git add ${BASE_WORKDIR}
   git commit -m "Destroy cluster ${CLUSTER_FULL_NAME}: ${CLUSTER_DESTROY_STATUS}"
@@ -219,9 +220,9 @@ if [[ -f "/var/git-crypt.key" ]]; then
   git-crypt unlock /tmp/git-crypt.key
 fi
 
-mkdir -p ${WORKDIR}
+mkdir -p "${WORKDIR}"
 echo "switching to workdir: ${WORKDIR}"
-cd ${WORKDIR}
+cd "${WORKDIR}"
 
 SHOULD_COMMIT_AND_PUSH=1
 
@@ -233,7 +234,7 @@ SHOULD_COMMIT_AND_PUSH=1
 # we need some missing components on provider side because of need to communicate with the metadata api inside the
 # cluster
 if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
-  cd terraform/providers/${PROVIDER_NAME}
+  cd terraform/providers/"${PROVIDER_NAME}"
   instance_filter="k8s.io/cluster/${CLUSTER_SLUG}"
   terraform init
   retry_command "TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform destroy -auto-approve" 10 4
@@ -244,13 +245,17 @@ fi
 # ------------------------------------------
 # Launch furyctl
 # ------------------------------------------
-touch ${WORKDIR}/cluster/logs/terraform.logs
-touch ${WORKDIR}/cluster/logs/ansible.log
+touch "${WORKDIR}"/cluster/logs/terraform.logs
+touch "${WORKDIR}"/cluster/logs/ansible.log
 
-tail -f ${WORKDIR}/cluster/logs/terraform.logs &
-tail -f ${WORKDIR}/cluster/logs/ansible.log &
+tail -f "${WORKDIR}"/cluster/logs/terraform.logs &
+tail -f "${WORKDIR}"/cluster/logs/ansible.log &
 
 retry_command "furyctl cluster destroy --force" 10 3
+
+
+# once everything is destroyed, we can remove the cluster folder
+rm -rfv "${WORKDIR}"
 
 echo
 echo "we're done! the cluster was deleted successfully 💣"
