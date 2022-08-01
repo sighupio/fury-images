@@ -236,8 +236,7 @@ if [ -d "terraform/providers/${PROVIDER_NAME}" ]; then
   cd terraform/providers/${PROVIDER_NAME}
   instance_filter="k8s.io/cluster/${CLUSTER_SLUG}"
   terraform init
-  TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform plan
-  retry_command "TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform apply -auto-approve" 10 4
+  retry_command "TF_VAR_fqdn=${INGRESS_BASE_URL} TF_VAR_instance_filter=${instance_filter} terraform destroy -auto-approve" 10 4
   cd -
 fi
 
