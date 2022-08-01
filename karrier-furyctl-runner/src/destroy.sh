@@ -64,12 +64,12 @@ git_commit_push() {
   # Mitigate the git commit error since GIT_COMMITTER_NAME and GIT_COMMITTER_EMAIL are not used during the commit command
   GIT_AUTHOR_NAME=${GIT_COMMITTER_NAME}
   GIT_AUTHOR_EMAIL=${GIT_COMMITTER_EMAIL}
-  CLUSTER_CREATION_STATUS="success"
-  if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then CLUSTER_CREATION_STATUS="failure"; fi
+  CLUSTER_DESTROY_STATUS="success"
+  if [ $? -ne 0 ] || [ ${JOB_RESULT} -ne 0 ]; then CLUSTER_DESTROY_STATUS="failure"; fi
 
   retry_command "git pull --rebase --autostash" 20 4
   git add ${BASE_WORKDIR}
-  git commit -m "Create cluster ${CLUSTER_FULL_NAME}: ${CLUSTER_CREATION_STATUS}"
+  git commit -m "Destroy cluster ${CLUSTER_FULL_NAME}: ${CLUSTER_DESTROY_STATUS}"
   retry_command "git push" 20 4
 }
 
@@ -102,11 +102,11 @@ notify_error() {
 }
 
 notify_start() {
-  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting creation of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}"
+  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Starting deletion of cluster *${CLUSTER_FULL_NAME}* :hammer_and_wrench:\"}}]}"
 }
 
 notify_finish() {
-  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been created :tada:\"}}]}"
+  notify "{\"channel\":\"${SLACK_CHANNEL}\",\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Your cluster *${CLUSTER_FULL_NAME}* has been destroyed :tada:\"}}]}"
 }
 
 trap handle_exit EXIT
