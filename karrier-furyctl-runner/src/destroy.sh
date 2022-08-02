@@ -255,7 +255,8 @@ retry_command "furyctl cluster destroy --force" 10 3
 
 
 # once everything is destroyed, we can remove the cluster folder
-rm -rfv "${WORKDIR}"
+cd "${BASE_WORKDIR}"
+rm -rfv  "${CLUSTER_SLUG}-${CLUSTER_UUID}"
 
 echo
 echo "we're done! the cluster was deleted successfully 💣"
