@@ -1,7 +1,5 @@
 image: sighup/prom-rules
 tags:
-  FURYCTL:
-    - v0.7.0
   ALPINE:
     - 3.16
   YQ:
