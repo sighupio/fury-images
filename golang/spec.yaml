@@ -1,5 +1,0 @@
-image: sighup/golang
-tags:
-  GOLANG_VERSION:
-    - 1.18.1
-    - 1.18

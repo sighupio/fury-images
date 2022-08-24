@@ -1,4 +1,0 @@
-image: sighup/karrier-furyctl-runner
-tags:
-  VERSION:
-    - 0.0.54
