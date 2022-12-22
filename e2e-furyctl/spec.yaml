@@ -3,8 +3,8 @@ tags:
   UBUNTU:
     - 20.04
   KUBECTL:
-    - v1.20.1
+    - v1.24.9
   FURYAGENT:
-    - v0.2.2
+    - v0.3.0
   BATS:
     - v1.2.1
