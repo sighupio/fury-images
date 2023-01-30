@@ -13,7 +13,7 @@ WORKDIR /build/drone
 ARG VERSION
 
 RUN git checkout v${VERSION}
-RUN go build -tags "nolimit" github.com/harness/drone/cmd/drone-server
+RUN go build -tags "nolimit" github.com/drone/drone/cmd/drone-server
 
 
 FROM drone/drone:${VERSION}
