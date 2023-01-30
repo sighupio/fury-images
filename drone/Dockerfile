@@ -1,4 +1,4 @@
-ARG DRONE
+ARG VERSION
 
 FROM golang:1.19.5-alpine as builder
 
@@ -10,12 +10,12 @@ RUN apk add git build-base && \
     git clone https://github.com/harness/drone.git
 
 WORKDIR /build/drone
-RUN git checkout v${DRONE}
+RUN git checkout v${VERSION}
 RUN go build -tags "nolimit" github.com/harness/drone/cmd/drone-server
 
-ARG DRONE
+ARG VERSION
 
-FROM drone/drone:${DRONE}
+FROM drone/drone:${VERSION}
 
 RUN rm /bin/drone-server
 
