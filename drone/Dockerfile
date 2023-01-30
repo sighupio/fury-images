@@ -10,10 +10,11 @@ RUN apk add git build-base && \
     git clone https://github.com/harness/drone.git
 
 WORKDIR /build/drone
+ARG VERSION
+
 RUN git checkout v${VERSION}
 RUN go build -tags "nolimit" github.com/harness/drone/cmd/drone-server
 
-ARG VERSION
 
 FROM drone/drone:${VERSION}
 
