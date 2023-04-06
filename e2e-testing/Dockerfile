@@ -10,14 +10,11 @@ ARG BATS
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV PATH /usr/lib/go-1.18/bin:$PATH
+ENV PATH /root/go/bin:/usr/lib/go-1.18/bin:$PATH
 
 RUN apt-get update
 
 RUN apt-get install -yq make git curl ca-certificates npm jq golang-1.18
-
-RUN echo "export PATH=/usr/lib/go-1.18/bin:${PATH}" >> .bashrc && \
-    echo "export PATH=/root/go/bin:${PATH}" >> .bashrc
 
 RUN npm install -g bats@${BATS}
 
