@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG KUBECTL
 ARG HELM
@@ -14,7 +14,7 @@ ENV PATH /root/go/bin:/usr/lib/go-1.18/bin:$PATH
 
 RUN apt-get update
 
-RUN apt-get install -yq make git curl ca-certificates npm jq golang-1.18
+RUN apt-get install -yq make git curl ca-certificates npm jq golang-1.20
 
 RUN npm install -g bats@${BATS}
 
