@@ -4,7 +4,7 @@ tags:
   KUBECTL:
     - 1.26.3
   HELM:
-    - 3.1.1
+    - 3.12.0
   YQ:
     - 4.33.3
   ISTIOCTL:
