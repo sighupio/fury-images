@@ -1,0 +1,21 @@
+FROM golang:1.19.0-alpine AS build
+
+RUN apk --update add \
+      ca-certificates \
+      git
+
+RUN mkdir /aws-sigv4-proxy
+WORKDIR /aws-sigv4-proxy
+
+RUN git clone https://github.com/awslabs/aws-sigv4-proxy.git .
+
+RUN go env -w GOPROXY=direct
+
+RUN CGO_ENABLED=0 GOOS=linux go build ./cmd/aws-sigv4-proxy
+
+FROM alpine:3
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /aws-sigv4-proxy/aws-sigv4-proxy ./
+
+ENTRYPOINT [ "./aws-sigv4-proxy"]
+

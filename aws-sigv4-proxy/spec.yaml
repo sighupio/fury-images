@@ -1,0 +1,4 @@
+image: sighup/aws-sigv4-proxy
+tags:
+  AWSPROXY_VERSION:
+    - v1.7.0
