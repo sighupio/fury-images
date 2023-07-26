@@ -1,4 +1,4 @@
 image: sighup/debug-tools
 tags:
   DEBIAN:
-    - bookwork
+    - bookworm
