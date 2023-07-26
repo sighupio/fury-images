@@ -13,6 +13,7 @@ RUN apt-get update \
           tcptraceroute \
           telnet \
           traceroute \
+          fio \
       && rm -rf /var/lib/apt/lists/*
 
 CMD ["sleep", "infinity"]
