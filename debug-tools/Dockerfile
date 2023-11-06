@@ -8,6 +8,7 @@ RUN apt-get update \
           iputils-ping \
           iputils-tracepath \
           jq \
+          yq \
           netcat-traditional \
           nmap \
           tcptraceroute \
