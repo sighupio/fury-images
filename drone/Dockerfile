@@ -13,6 +13,7 @@ WORKDIR /build/gitness
 ARG VERSION
 
 RUN git checkout v${VERSION}
+
 RUN go build -tags "nolimit" github.com/drone/drone/cmd/drone-server
 
 
@@ -20,4 +21,4 @@ FROM drone/drone:${VERSION}
 
 RUN rm /bin/drone-server
 
-COPY --from=builder /build/drone/drone-server /bin/drone-server
+COPY --from=builder /build/gitness/drone-server /bin/drone-server
