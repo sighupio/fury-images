@@ -1,15 +1,15 @@
 ARG VERSION
 
-FROM golang:1.21.1-alpine3.18 as builder
+FROM golang:1.21.6-alpine3.18 as builder
 
 RUN mkdir /build
 ADD . /build/
 
 WORKDIR /build
 RUN apk add git build-base && \
-    git clone https://github.com/harness/drone.git
+    git clone https://github.com/harness/gitness.git
 
-WORKDIR /build/drone
+WORKDIR /build/gitness
 ARG VERSION
 
 RUN git checkout v${VERSION}

@@ -1,4 +1,4 @@
 image: sighup/drone
 tags:
   VERSION:
-    - 2.20.0
+    - 2.22.0
