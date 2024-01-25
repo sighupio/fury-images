@@ -1,8 +1,8 @@
 image: sighup/node
 tags:
   NODE_VERSION:
-    - 20.11.0
     - 21.6.1
+    - 20.11.0
 platforms:
   - linux/arm64
   - linux/amd64
