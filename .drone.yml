@@ -11,16 +11,16 @@ steps:
   - name: build
     image: docker:dind
     environment:
+      DEBUG: true
       USER:
-        from_secret:
-          QUAY_USER
+        from_secret: QUAY_USER
       TOKEN:
-        from_secret:
-          QUAY_TOKEN
+        from_secret: QUAY_TOKEN
     pull: always
     commands:
       - docker login -p $TOKEN -u $USER quay.io
       - apk add --no-cache python3 py-yaml git
+      - docker run --rm --privileged tonistiigi/binfmt --install all
       - modified=$(git diff --name-only HEAD~1..HEAD . | xargs echo)
       - echo $modified
       - ./build.py quay.io $modified
@@ -29,11 +29,11 @@ steps:
         path: /var/run/docker.sock
     when:
       event:
-      - push
+        - push
       branch:
-      - master
+        - master
 
 volumes:
-- name: dockersock
-  host:
-    path: /var/run/docker.sock
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
