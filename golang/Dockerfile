@@ -23,7 +23,7 @@ ENV GOPRIVATE=github.com/sighupio/*
 ENV PATH=/go/bin/${TARGETOS}_${TARGETARCH}:${PATH}
 
 RUN apk update && \
-    apk add build-base curl git jq make util-linux yq
+    apk add build-base curl git jq make util-linux yq docker-cli docker-cli-buildx gpg
 
 RUN go install github.com/google/addlicense@${ADDLICENSE_VERSION} && \
     go install github.com/go-delve/delve/cmd/dlv@${DLV_VERSION} && \
