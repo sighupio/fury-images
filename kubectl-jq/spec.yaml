@@ -1,0 +1,4 @@
+image: sighup/kubectl-jq
+tags:
+  KUBECTL:
+    - 1.29.3
