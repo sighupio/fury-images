@@ -1,4 +1,5 @@
 image: sighup/postgresql-redmine
 tags:
   POSTGRESQL:
+    - 11
     - 15
