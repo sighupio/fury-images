@@ -4,8 +4,6 @@ FROM ghcr.io/cloudnative-pg/postgresql:${POSTGRESQL}
 
 USER root
 
-RUN apt update && apt install -y postgresql-15-pg-stat-kcache
-
 ARG POSTGRESQL
 
 RUN set -xe; \
