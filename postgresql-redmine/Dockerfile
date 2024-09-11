@@ -9,7 +9,7 @@ ARG POSTGRESQL
 RUN set -xe; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${POSTGRESQL}-pg-stat-kcache" ; \
+		"postgresql-${POSTGRESQL}-pg-stat-kcache" "postgresql-${POSTGRESQL}-set-user" ; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
 
