@@ -31,6 +31,6 @@ RUN go install github.com/google/addlicense@${ADDLICENSE_VERSION} && \
     go install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCILINT_VERSION} && \
     go install github.com/golang-migrate/migrate/v4/cmd/migrate@${GOMIGRATE_VERSION} && \
-    go install github.com/goreleaser/goreleaser@${GORELEASER_VERSION} && \
+    go install github.com/goreleaser/goreleaser/v2@${GORELEASER_VERSION} && \
     go install golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION} && \
     go install github.com/evanphx/json-patch/cmd/json-patch@${JSON_PATCH_VERSION}
