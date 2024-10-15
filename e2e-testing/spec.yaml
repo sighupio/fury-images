@@ -3,6 +3,8 @@ image: sighup/e2e-testing
 tags:
   KUBECTL:
     - 1.29.1
+    - 1.30.5
+    - 1.31.1
   HELM:
     - 3.12.0
   YQ:
@@ -13,5 +15,6 @@ tags:
     - 0.11.0
   KUSTOMIZE:
     - 3.5.3
+    - 3.10.0
   BATS:
     - 1.1.0
