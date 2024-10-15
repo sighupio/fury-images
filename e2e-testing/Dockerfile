@@ -19,7 +19,7 @@ RUN npm install -g bats@${BATS}
 
 RUN go install github.com/santhosh-tekuri/jsonschema/cmd/jv@latest
 
-RUN curl -fLOs https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL}/bin/linux/amd64/kubectl && \
+RUN curl -fLOs https://dl.k8s.io/release/v${KUBECTL}/bin/linux/amd64/kubectl && \
     chmod +x kubectl && \
     mv ./kubectl /usr/local/bin/kubectl
 
