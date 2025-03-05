@@ -5,14 +5,14 @@ ARG HELM
 ARG YQ
 ARG KUSTOMIZE
 ARG BATS
-ARG DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND noninteractive
 ARG AWSCLI
 
 ENV PATH /root/go/bin:/usr/lib/go-1.18/bin:$PATH
 
 RUN apt-get update
 
-RUN apt-get install -yq make git curl ca-certificates npm jq skopeo
+RUN apt-get install -yq make git curl ca-certificates npm jq skopeo unzip
 
 RUN npm install -g bats@${BATS}
 
@@ -35,7 +35,7 @@ RUN curl -fLOs https://github.com/kubernetes-sigs/kustomize/releases/download/ku
     mv kustomize /usr/local/bin/kustomize
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI}.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && sudo ./aws/install && rm -rf ./aws ./awscliv2.zip
+    unzip awscliv2.zip && ./aws/install && rm -rf ./aws ./awscliv2.zip
 
 RUN make --version && \
     kubectl version --client && \
