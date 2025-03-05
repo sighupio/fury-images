@@ -6,6 +6,7 @@ ARG YQ
 ARG KUSTOMIZE
 ARG BATS
 ARG DEBIAN_FRONTEND=noninteractive
+ARG AWSCLI
 
 ENV PATH /root/go/bin:/usr/lib/go-1.18/bin:$PATH
 
@@ -33,10 +34,14 @@ RUN curl -fLOs https://github.com/kubernetes-sigs/kustomize/releases/download/ku
     chmod +x kustomize && \
     mv kustomize /usr/local/bin/kustomize
 
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI}.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && sudo ./aws/install && rm -rf ./aws ./awscliv2.zip
+
 RUN make --version && \
     kubectl version --client && \
     helm version && \
     jq --version && \
     yq --version && \
     kustomize version && \
-    bats --version
+    bats --version && \
+    aws --version
