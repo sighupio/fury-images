@@ -1,0 +1,6 @@
+image: sighup/etcdctl-alpine-yq
+tags:
+  ALPINE:
+    - 3.21
+  ETCD:
+    - v3.5.19
